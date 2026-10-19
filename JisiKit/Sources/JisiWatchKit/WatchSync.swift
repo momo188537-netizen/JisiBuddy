@@ -63,6 +63,8 @@ public struct WatchState: Codable, Hashable, Sendable {
             s.isWorking = false
             s.startedAt = nil
             s.expectedClockOut = nil
+        case .sync:
+            return self
         }
         return s
     }
@@ -85,10 +87,12 @@ public enum WorkPhase: Hashable, Sendable {
     public var isWorking: Bool { self != .off }
 }
 
-/// 手表 → iPhone：上班 / 一起下班。
+/// 手表 → iPhone：上班 / 一起下班，或者只要一份最新状态（手表 App 打开时）。
 public struct WatchCommand: Codable, Hashable, Sendable {
     public enum Action: String, Codable, Sendable {
         case clockIn, clockOut
+        /// 不改任何东西，iPhone 回复此刻的状态
+        case sync
     }
 
     public var action: Action

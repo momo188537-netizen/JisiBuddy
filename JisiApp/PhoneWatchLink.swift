@@ -33,15 +33,27 @@ final class PhoneWatchLink: NSObject {
         ]
     }
 
-    /// 把此刻的状态推给手表（只留最新一份，手表下次醒来就能拿到）。
+    /// 把此刻的状态推给手表，三条路一起走：
+    /// - 手表 App 在前台（可达）：sendMessage 即时送到
+    /// - 表盘上有鸡丝复杂功能：transferCurrentComplicationUserInfo，手表 App 不在前台也会被唤醒刷新（每天有次数上限）
+    /// - 兜底：applicationContext 只留最新一份，手表 App 下次打开时拿到
+    /// 不检查 isWatchAppInstalled：直接从 Xcode 装到手表的 App，iPhone 这边有时认不出来，交给下面各自报错。
     func push(now: Date = Date()) {
         let session = WCSession.default
-        guard WCSession.isSupported(), session.activationState == .activated,
-              session.isPaired, session.isWatchAppInstalled else { return }
+        guard WCSession.isSupported(), session.activationState == .activated, session.isPaired else { return }
+        let payload = WatchCodec.payload(for: store.watchState(now: now))
         do {
-            try session.updateApplicationContext(WatchCodec.payload(for: store.watchState(now: now)))
+            try session.updateApplicationContext(payload)
         } catch {
             print("[watch] updateApplicationContext 失败：\(error)")
+        }
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil) { error in
+                print("[watch] sendMessage 失败：\(error)")
+            }
+        }
+        if session.isComplicationEnabled, session.remainingComplicationUserInfoTransfers > 0 {
+            session.transferCurrentComplicationUserInfo(payload)
         }
     }
 
@@ -60,6 +72,8 @@ final class PhoneWatchLink: NSObject {
             }
         case .clockOut:
             if live.isWorking { await live.endWork() }
+        case .sync:
+            return store.watchState(now: now)
         }
         // startWork / endWork 会发 jisiWorkStateDidChange 推一次；没变化的情况（已经在上班等）这里再推一次
         push()
@@ -81,6 +95,12 @@ extension PhoneWatchLink: WCSessionDelegate {
     }
 
     nonisolated func sessionWatchStateDidChange(_ session: WCSession) {
+        Task { @MainActor in self.push() }
+    }
+
+    /// 手表 App 刚打开、变得可达：马上把最新状态送过去
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        guard session.isReachable else { return }
         Task { @MainActor in self.push() }
     }
 

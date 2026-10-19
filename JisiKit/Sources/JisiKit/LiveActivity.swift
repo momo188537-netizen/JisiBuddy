@@ -6,6 +6,13 @@ public enum ResumePolicy {
         guard let s = session, s.isOpen, !s.userEnded, !activityAlive else { return false }
         return now >= s.startedAt && now < s.expectedClockOut
     }
+
+    /// 回前台时直接把实时活动补上：会话是从手表开始的、当时 App 在后台没能启动过实时活动（activityID 为空），
+    /// 而且不是用户自己划掉的。划掉过的仍然只显示「继续陪伴」。
+    public static func shouldAutoStart(session: WorkSession?, activityAlive: Bool, now: Date) -> Bool {
+        guard shouldOfferResume(session: session, activityAlive: activityAlive, now: now), let s = session else { return false }
+        return s.activityID == nil && !s.userDismissed
+    }
 }
 
 /// 点「带鸡丝上班 / 继续陪伴」时怎么处理已有的 Live Activity：同一时间最多一个。纯函数，方便测试。
@@ -150,6 +157,11 @@ public final class LiveActivityController {
                 activity = nil
             }
         }
+        if activity == nil {
+            await WatchStartNotice.post()
+        } else {
+            WatchStartNotice.remove()
+        }
         session.activityID = activity?.id
         store.session = session
         if let activity { observe(activity) }
@@ -170,6 +182,7 @@ public final class LiveActivityController {
             JisiLog.append(CatEventKind.clockOut.rawValue, at: now)
         }
         ClockOutNotice.cancel(store: store, now: now)
+        WatchStartNotice.remove()
         // 下班了，会也就散了（不然鸡丝还在「安静陪你开会」）
         if store.meetingUntil != nil {
             store.meetingUntil = nil
@@ -201,6 +214,10 @@ public final class LiveActivityController {
 
     public func shouldOfferResume(now: Date = Date()) -> Bool {
         ResumePolicy.shouldOfferResume(session: store.session, activityAlive: isRunning, now: now)
+    }
+
+    public func shouldAutoStart(now: Date = Date()) -> Bool {
+        ResumePolicy.shouldAutoStart(session: store.session, activityAlive: isRunning, now: now)
     }
 
     // MARK: -

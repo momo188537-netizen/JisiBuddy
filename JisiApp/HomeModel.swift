@@ -61,6 +61,8 @@ final class HomeModel {
 
     func onForeground() {
         refresh()
+        // 手表上点的「上班」当时没能把鸡丝放到锁屏（App 在后台），现在补上
+        if live.shouldAutoStart(), live.areActivitiesEnabled { startWork() }
         Task { await live.refresh() }
         Task { await Reminders.shared.reschedule() }
     }

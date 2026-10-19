@@ -16,7 +16,7 @@ struct WatchCodecTests {
     }
 
     @Test func commandRoundTrips() throws {
-        for action in [WatchCommand.Action.clockIn, .clockOut] {
+        for action in [WatchCommand.Action.clockIn, .clockOut, .sync] {
             let c = WatchCommand(action: action, sentAt: now)
             let payload = WatchCodec.payload(for: c)
             #expect(WatchCodec.command(from: payload) == c)
@@ -88,6 +88,11 @@ struct WatchStateTests {
         let working = WatchState(isWorking: true, startedAt: date(9), expectedClockOut: date(18, 30), updatedAt: date(9))
         let s = working.applying(.clockIn, at: date(10), calendar: calendar)
         #expect(s.startedAt == date(9))
+    }
+
+    @Test func syncChangesNothing() {
+        let working = WatchState(isWorking: true, startedAt: date(9), expectedClockOut: date(18, 30), updatedAt: date(9))
+        #expect(working.applying(.sync, at: date(10), calendar: calendar) == working)
     }
 
     @Test func optimisticClockOut() {

@@ -33,6 +33,16 @@ final class WatchModel: NSObject {
         expression = expression.next
     }
 
+    /// 手表 App 回到前台时问 iPhone 要一份最新状态（applicationContext 有时要等很久才送到）。
+    func requestSync() {
+        let session = WCSession.default
+        guard session.activationState == .activated, session.isReachable else { return }
+        session.sendMessage(WatchCodec.payload(for: WatchCommand(action: .sync, sentAt: Date())), replyHandler: { reply in
+            guard let state = WatchCodec.state(from: reply) else { return }
+            Task { @MainActor in self.receive(state) }
+        }, errorHandler: nil)
+    }
+
     func send(_ action: WatchCommand.Action, now: Date = Date()) {
         expression = action == .clockIn ? .love : .sleepy
         apply(state.applying(action, at: now))
@@ -88,8 +98,28 @@ final class WatchModel: NSObject {
 extension WatchModel: WCSessionDelegate {
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         let context = session.receivedApplicationContext
-        guard let state = WatchCodec.state(from: context) else { return }
+        let state = WatchCodec.state(from: context)
+        Task { @MainActor in
+            if let state { self.receive(state) }
+            self.requestSync()
+        }
+    }
+
+    /// iPhone 可达时即时推来的状态
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        guard let state = WatchCodec.state(from: message) else { return }
         Task { @MainActor in self.receive(state) }
+    }
+
+    /// iPhone 为表盘复杂功能发的 transferCurrentComplicationUserInfo（手表 App 不在前台也会送到）
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        guard let state = WatchCodec.state(from: userInfo) else { return }
+        Task { @MainActor in self.receive(state) }
+    }
+
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
+        guard session.isReachable else { return }
+        Task { @MainActor in self.requestSync() }
     }
 
     nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {

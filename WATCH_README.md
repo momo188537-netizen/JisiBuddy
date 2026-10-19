@@ -18,7 +18,9 @@
 | `scripts/import-jisi.sh` | 换头像时一起生成手表用的两张小图 |
 | `JisiKit/Tests/JisiKitTests/WatchSyncTests.swift` | 19 个测试：同步消息编解码（含属性列表合法性）、旧状态不覆盖新状态、过期请求丢弃、乐观更新的下班点、iPhone 会话转换、倒计时 / 进度 / 文案、表情循环、头像资源 |
 
-数据流：iPhone `SharedStore` → `updateApplicationContext` → 手表 `WatchModel` → 手表 App Group → `reloadAllTimelines` → 复杂功能。
+数据流：iPhone `SharedStore` → 手表 `WatchModel` → 手表 App Group → `reloadAllTimelines` → 复杂功能。iPhone 每次状态变化三路一起推：手表可达时 `sendMessage` 即时送到；表盘有鸡丝复杂功能时 `transferCurrentComplicationUserInfo`（手表 App 不在前台也会被唤醒，每天有次数上限）；`updateApplicationContext` 兜底。手表 App 打开 / 变可达时还会主动发 `sync` 请求要一份最新状态。
+
+（真机第一版只用了 `updateApplicationContext`，它只在手表 App 下次被系统唤醒时才送到，表现为「手机点上班，手表没反应」；另外 iPhone 端检查 `isWatchAppInstalled`，直接从 Xcode 装到手表的 App 可能被误判为没装而不推送，已去掉这个检查。）
 
 通知：没加任何手表端通知代码，iPhone 的饭点 / 休息 / 下班提醒按系统规则镜像到手表（iPhone 锁屏、手表戴着时），「吃了」「休息了」「一起下班」按钮也会出现在手表上并回到 iPhone 执行。代码里没有阻止转发的设置（没用 passive 级别，带声音）。
 
@@ -42,7 +44,7 @@
 
 - **免费团队 App ID 数量**：现在一共 4 个 bundle id（App、锁屏小组件、手表 App、手表小组件）。免费账号每 7 天最多注册 10 个 App ID，第一次签手表时会新注册 2 个；如果 Xcode 报超限，等几天或把 bundle id 前缀改成之前用过的。
 - **App Group 签不出来**：免费团队的 App Group 有时签不上。手表 App 和复杂功能就各自用自己的 UserDefaults，复杂功能会一直显示「还没上班」（手表 App 本身不受影响）。
-- **后台上班没有实时活动**：手表点「上班」时如果 iPhone App 不在前台，iOS 不允许开始实时活动，会话照样开始、下班提醒照样排，但锁屏上暂时没有鸡丝卡片，打开一次 App 点「继续陪伴」补上。
+- **后台上班没有实时活动**：手表点「上班」时如果 iPhone App 不在前台，iOS 不允许开始实时活动（免费账号也没有推送启动）。会话照样开始，iPhone 发一条通知「鸡丝已经陪你上班啦，点一下把它放到锁屏和灵动岛」；点通知（或任何时候打开 App）会自动把实时活动补上。只有「从没启动过」的才自动补，用户自己划掉的仍然只显示「继续陪伴」。需要允许鸡丝发通知。
 - **小组件扩展进程里点的「一起下班」**（锁屏实时活动按钮）不会立刻推给手表，等 iPhone App 下次启动或回到前台时补推，手表那几分钟会显示还在上班。
 - **iPhone 不在身边**：手表点按钮先显示新状态并提示「连上后同步」；请求排队超过 15 分钟才送到 iPhone 的会被丢弃，之后手表以 iPhone 推来的状态为准。
 - 手表和 iPhone 的时钟如果差得多，「旧状态不覆盖新状态」可能误判；对自己请求的回复总是采纳，影响有限。

@@ -260,3 +260,39 @@ extension ArtTests {
         #expect(JisiArt.closed.mediumFace != nil && JisiArt.closed.monoFace != nil)
     }
 }
+
+struct AutoStartTests {
+    let start = Date(timeIntervalSince1970: 1_800_000_000)
+    var clockOut: Date { start.addingTimeInterval(9 * 3600) }
+    var mid: Date { start.addingTimeInterval(3600) }
+
+    /// 手表开始的会话，实时活动从没启动过 → 回前台自动补上
+    @Test func autoStartsWhenActivityNeverStarted() {
+        let s = WorkSession(startedAt: start, expectedClockOut: clockOut)
+        #expect(ResumePolicy.shouldAutoStart(session: s, activityAlive: false, now: mid))
+    }
+
+    /// 用户划掉过的不自动重启，只给「继续陪伴」
+    @Test func noAutoStartAfterUserSwipedAway() {
+        var s = WorkSession(startedAt: start, expectedClockOut: clockOut, userDismissed: true)
+        s.activityID = "a"
+        #expect(!ResumePolicy.shouldAutoStart(session: s, activityAlive: false, now: mid))
+        #expect(ResumePolicy.shouldOfferResume(session: s, activityAlive: false, now: mid))
+    }
+
+    /// 启动过、后来被系统结束的也不自动重启
+    @Test func noAutoStartWhenActivityExistedBefore() {
+        var s = WorkSession(startedAt: start, expectedClockOut: clockOut)
+        s.activityID = "a"
+        #expect(!ResumePolicy.shouldAutoStart(session: s, activityAlive: false, now: mid))
+    }
+
+    @Test func noAutoStartWhenAliveEndedOrPastClockOut() {
+        let s = WorkSession(startedAt: start, expectedClockOut: clockOut)
+        #expect(!ResumePolicy.shouldAutoStart(session: s, activityAlive: true, now: mid))
+        #expect(!ResumePolicy.shouldAutoStart(session: s, activityAlive: false, now: clockOut.addingTimeInterval(1)))
+        let ended = WorkSession(startedAt: start, expectedClockOut: clockOut, userEnded: true)
+        #expect(!ResumePolicy.shouldAutoStart(session: ended, activityAlive: false, now: mid))
+        #expect(!ResumePolicy.shouldAutoStart(session: nil, activityAlive: false, now: mid))
+    }
+}
