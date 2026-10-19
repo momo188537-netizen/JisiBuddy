@@ -47,6 +47,7 @@ final class HomeModel {
     func onForeground() {
         refresh()
         Task { await live.refresh() }
+        Task { await Reminders.shared.reschedule() }
     }
 
     func refresh(now: Date = Date()) {

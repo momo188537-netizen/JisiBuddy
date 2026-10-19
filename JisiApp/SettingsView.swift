@@ -42,6 +42,13 @@ struct SettingsView: View {
                 } footer: {
                     Text("提醒里可以直接点「吃了」「休息了」，鸡丝会知道。不点也没关系。")
                 }
+                #if DEBUG
+                Section("调试") {
+                    Button("1 分钟后发一条测试饭点提醒") {
+                        Task { await Reminders.shared.sendTestMeal() }
+                    }
+                }
+                #endif
             }
             .navigationTitle("设置")
             .toolbar {

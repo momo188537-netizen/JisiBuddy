@@ -282,7 +282,7 @@ public enum JisiArt {
     /// 主屏幕 / 待机小组件用。
     public static let mediumFace: Image? = load(maxPixel: 320)
 
-    static var faceURL: URL? { Bundle.module.url(forResource: "JisiFace", withExtension: "png") }
+    public static var faceURL: URL? { Bundle.module.url(forResource: "JisiFace", withExtension: "png") }
 
     static func load(maxPixel: Int?) -> Image? {
         guard let url = faceURL else { return nil }
