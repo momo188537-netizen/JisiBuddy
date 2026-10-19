@@ -35,8 +35,9 @@ struct JisiLockScreenWidget: Widget {
                 }
         }
         .configurationDisplayName("鸡丝")
-        .description("鸡丝在锁屏、主屏幕和待机里陪你。")
-        .supportedFamilies([.accessoryRectangular, .accessoryCircular, .systemSmall])
+        .description("鸡丝在主屏幕和待机里陪你。")
+        // 锁屏小组件只能单色显示，用户觉得黑白不好看，先隐藏；代码保留，加回 .accessoryRectangular / .accessoryCircular 即可恢复。
+        .supportedFamilies([.systemSmall])
     }
 }
 
