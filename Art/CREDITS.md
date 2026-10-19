@@ -2,6 +2,16 @@
 
 鸡丝本人的头像（`JisiFace.png`、`JisiFaceMono.png`、App 图标）来自用户提供的照片，不属于下表。
 
+鸡丝闭眼照（`JisiFaceClosed.png`、`JisiFaceClosedMono.png`，手表的 `WatchFaceClosed.png`、`WatchFaceClosedSmall.png`）同样由用户本人提供（2026-10-20），原图存为 `Art/jisi-closed-source.png`（白底 1254px，朝向与 `JisiFace.png` 一致，未翻转）。睡觉、打盹、犯困、眨眼时整张换成这张图。重新生成：
+
+```sh
+swift scripts/whiteout.swift Art/jisi-closed-source.png /tmp/closed.png        # 去白底
+sips -s format png -Z 512 /tmp/closed.png --out JisiKit/Sources/JisiKit/Resources/JisiFaceClosed.png
+swift scripts/mono-face.swift JisiKit/Sources/JisiKit/Resources/JisiFaceClosed.png JisiKit/Sources/JisiKit/Resources/JisiFaceClosedMono.png 144
+sips -s format png -Z 256 JisiKit/Sources/JisiKit/Resources/JisiFaceClosed.png --out JisiKit/Sources/JisiWatchKit/Resources/WatchFaceClosed.png
+sips -s format png -Z 84  JisiKit/Sources/JisiKit/Resources/JisiFaceClosed.png --out JisiKit/Sources/JisiWatchKit/Resources/WatchFaceClosedSmall.png
+```
+
 | 文件（`JisiKit/Sources/JisiKit/Resources/`） | 原素材 | 来源 | 作者 | 许可证 | 改动 |
 | --- | --- | --- | --- | --- | --- |
 | `ItemYarn.png` | Yarn (3D) | https://github.com/microsoft/fluentui-emoji/tree/main/assets/Yarn/3D | Microsoft | MIT | 色相旋转为暖珊瑚色、略降饱和 |

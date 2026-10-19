@@ -155,22 +155,24 @@ public struct JisiCatView: View {
         .frame(width: side, height: side)
     }
 
+    /// 闭眼（睡觉、打盹、眨眼、犯困）整张换成鸡丝的闭眼照，两张照片构图对齐，直接切换。
     func head(eyes: CatLook.EyeState, side: CGFloat, small: Bool) -> some View {
         ZStack {
-            if let image = artwork(small: small) {
+            if let image = artwork(small: small, closed: eyes != .open) {
                 fullColor(image.resizable()).scaledToFit()
             } else {
                 PlaceholderFace()
+                EyePatches(state: eyes)
             }
-            EyePatches(state: eyes)
         }
         .frame(width: side * 0.86, height: side * 0.86)
     }
 
-    func artwork(small: Bool) -> Image? {
-        if !small { return JisiArt.face }
-        if monochrome { return JisiArt.monoFace ?? JisiArt.smallFace }
-        return largeStill ? JisiArt.mediumFace : JisiArt.smallFace
+    func artwork(small: Bool, closed: Bool) -> Image? {
+        let art = closed ? JisiArt.closed : JisiArt.open
+        if !small { return art.face }
+        if monochrome { return art.monoFace ?? art.smallFace }
+        return largeStill ? art.mediumFace : art.smallFace
     }
 
     /// 系统给 Widget 着色（accented 模式）时，头像保持原色。
@@ -209,6 +211,7 @@ public struct JisiCatView: View {
 }
 
 /// 眨眼 / 闭眼贴片。先用简单形状占位：一块毛色的椭圆盖住眼睛，上面画一条弧线。
+/// 只在没有鸡丝照片、用占位脸时用：代码画的眼皮。
 struct EyePatches: View {
     var state: CatLook.EyeState
 
@@ -315,6 +318,24 @@ public enum JisiArt {
     /// JisiKit/Sources/JisiKit/Resources/JisiFace.png（已水平翻转、缩到 512px）。
     public static let face: Image? = load(maxPixel: nil)
 
+    /// 同一套尺寸的一组头像（睁眼 / 闭眼各一组）。
+    public struct FaceSet: Sendable {
+        public let face: Image?
+        public let mediumFace: Image?
+        public let smallFace: Image?
+        public let monoFace: Image?
+    }
+
+    public static let open = FaceSet(face: face, mediumFace: mediumFace, smallFace: smallFace, monoFace: monoFace)
+
+    /// 闭眼照 JisiFaceClosed.png（用户提供，scripts/whiteout.swift 去白底，见 Art/CREDITS.md）。
+    public static let closed = FaceSet(
+        face: load(name: "JisiFaceClosed", maxPixel: nil) ?? face,
+        mediumFace: load(name: "JisiFaceClosed", maxPixel: 320) ?? mediumFace,
+        smallFace: load(name: "JisiFaceClosed", maxPixel: smallFacePixels) ?? smallFace,
+        monoFace: loadPlain("JisiFaceClosedMono") ?? monoFace
+    )
+
     /// 小物件图片（Microsoft Fluent Emoji，见 Art/CREDITS.md）。`small` 用于 Widget / Live Activity。
     @ViewBuilder
     public static func prop(_ name: String, small: Bool = false) -> some View {
@@ -359,22 +380,26 @@ public enum JisiArt {
     static let smallFacePixels = 144
 
     /// 锁屏单色模式用：scripts/mono-face.swift 生成的 144px 高对比度灰度图。
-    public static let monoFace: Image? = {
-        guard let url = Bundle.module.url(forResource: "JisiFaceMono", withExtension: "png") else { return nil }
+    public static let monoFace: Image? = loadPlain("JisiFaceMono")
+
+    static func loadPlain(_ name: String) -> Image? {
+        guard let url = Bundle.module.url(forResource: name, withExtension: "png") else { return nil }
         #if canImport(UIKit)
         return UIImage(contentsOfFile: url.path).map { Image(uiImage: $0) }
         #else
         return NSImage(contentsOf: url).map { Image(nsImage: $0) }
         #endif
-    }()
+    }
 
     /// 主屏幕 / 待机小组件用。
     public static let mediumFace: Image? = load(maxPixel: 320)
 
     public static var faceURL: URL? { Bundle.module.url(forResource: "JisiFace", withExtension: "png") }
 
-    static func load(maxPixel: Int?) -> Image? {
-        guard let url = faceURL else { return nil }
+    public static var closedFaceURL: URL? { Bundle.module.url(forResource: "JisiFaceClosed", withExtension: "png") }
+
+    static func load(name: String = "JisiFace", maxPixel: Int?) -> Image? {
+        guard let url = Bundle.module.url(forResource: name, withExtension: "png") else { return nil }
         guard let maxPixel else {
             #if canImport(UIKit)
             return UIImage(contentsOfFile: url.path).map { Image(uiImage: $0) }

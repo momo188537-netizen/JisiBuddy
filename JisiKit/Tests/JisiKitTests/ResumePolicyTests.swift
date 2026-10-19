@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import ImageIO
 @testable import JisiKit
 
 struct ResumePolicyTests {
@@ -242,5 +243,20 @@ struct MeetingTests {
         let fire = ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: nil, now: date(20, 18),
                                            meetingUntil: date(20, 19), calendar: calendar)
         #expect(fire == date(20, 19))
+    }
+}
+
+extension ArtTests {
+    /// 闭眼照：资源在、和睁眼图一样是 512px 透明 PNG，小图同样不超过锁屏 Widget 上限。
+    @Test func closedFaceIsBundledAndSized() throws {
+        let url = try #require(JisiArt.closedFaceURL)
+        let src = try #require(CGImageSourceCreateWithURL(url as CFURL, nil))
+        let full = try #require(CGImageSourceCreateImageAtIndex(src, 0, nil))
+        #expect(full.width == 512 && full.height == 512)
+        #expect(full.alphaInfo != .none && full.alphaInfo != .noneSkipLast && full.alphaInfo != .noneSkipFirst)
+        let cg = try #require(JisiArt.thumbnail(url: url, maxPixel: JisiArt.smallFacePixels))
+        #expect(max(cg.width, cg.height) <= JisiArt.smallFacePixels)
+        #expect(JisiArt.closed.face != nil && JisiArt.closed.smallFace != nil)
+        #expect(JisiArt.closed.mediumFace != nil && JisiArt.closed.monoFace != nil)
     }
 }

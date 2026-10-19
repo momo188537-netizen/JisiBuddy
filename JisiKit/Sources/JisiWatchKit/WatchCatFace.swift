@@ -64,7 +64,9 @@ public struct WatchCatFace: View {
 
     @ViewBuilder
     var face: some View {
-        if let image = small ? WatchArt.smallFace : WatchArt.face {
+        if let image = expression == .sleepy
+            ? (small ? WatchArt.closedSmallFace : WatchArt.closedFace)
+            : (small ? WatchArt.smallFace : WatchArt.face) {
             image.resizable().scaledToFit()
         } else {
             Circle().fill(WatchArt.furColor)
@@ -111,6 +113,9 @@ public enum WatchArt {
     /// 表盘复杂功能用，84px
     public static let smallFace: Image? = load("WatchFaceSmall")
     public static let fish: Image? = load("WatchFish")
+    /// 闭眼照（犯困表情用），同样两种尺寸
+    public static let closedFace: Image? = load("WatchFaceClosed") ?? face
+    public static let closedSmallFace: Image? = load("WatchFaceClosedSmall") ?? smallFace
 
     static func load(_ name: String) -> Image? {
         guard let url = Bundle.module.url(forResource: name, withExtension: "png") else { return nil }

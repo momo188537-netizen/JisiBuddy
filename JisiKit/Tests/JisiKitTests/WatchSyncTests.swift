@@ -164,5 +164,7 @@ struct WatchCountdownTests {
         #expect(WatchArt.face != nil)
         #expect(WatchArt.smallFace != nil)
         #expect(WatchArt.fish != nil)
+        #expect(WatchArt.closedFace != nil)
+        #expect(WatchArt.closedSmallFace != nil)
     }
 }
