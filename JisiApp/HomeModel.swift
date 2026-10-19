@@ -17,6 +17,7 @@ final class HomeModel {
     private(set) var isBusy = false
     private(set) var diary = Diary()
     private(set) var light: SceneLight = .day
+    private(set) var isRestDay = false
     var errorMessage: String?
 
     var schedule: Schedule {
@@ -45,6 +46,7 @@ final class HomeModel {
         schedule = SharedStore.shared.schedule
         diary = SharedStore.shared.diary
         light = SceneLight.at(Date(), schedule: SharedStore.shared.schedule)
+        isRestDay = !SharedStore.shared.schedule.isWorkday(Date(), calendar: .current)
         reminders = SharedStore.shared.reminders
         live.reattach()
     }
@@ -64,6 +66,7 @@ final class HomeModel {
         if d.memories.count != count { store.diary = d }
         diary = d
         light = SceneLight.at(now, schedule: store.schedule)
+        isRestDay = !store.schedule.isWorkday(now, calendar: .current)
         isWorking = live.isWorking
         offerResume = live.shouldOfferResume(now: now)
     }

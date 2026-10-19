@@ -19,7 +19,7 @@ struct SettingsView: View {
                     time("睡觉", $model.schedule.bedtime)
                     time("起床", $model.schedule.wake)
                 }
-                Section("工作日") {
+                Section {
                     HStack {
                         ForEach(weekdays, id: \.0) { day, name in
                             let on = model.schedule.workdays.contains(day)
@@ -30,7 +30,12 @@ struct SettingsView: View {
                             .tint(on ? .orange : .gray)
                         }
                     }
+                } header: {
+                    Text("工作日")
+                } footer: {
+                    Text("休息日鸡丝窝在家里，不发休息提醒和下班提醒；饭点提醒照常。周末加班也可以带上鸡丝。")
                 }
+
                 Section {
                     Toggle("饭点提醒", isOn: $model.reminders.mealsEnabled)
                     Toggle("休息提醒", isOn: $model.reminders.breaksEnabled)

@@ -89,6 +89,7 @@ struct TodayView: View {
         } label: {
             Text("今天的小事").font(.subheadline.weight(.semibold)).foregroundStyle(.primary)
         }
+        .tint(.primary)
         .padding()
         .background(Color.orange.opacity(0.06), in: .rect(cornerRadius: 14))
     }

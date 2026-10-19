@@ -155,6 +155,20 @@ struct HomeView: View {
                 .controlSize(.large)
                 .disabled(model.isBusy)
             }
+        } else if model.isRestDay {
+            // 休息日：鸡丝窝在家里，「上班」退到不显眼的地方，周末加班也能用
+            VStack(spacing: 8) {
+                Label("今天休息，鸡丝窝在家里", systemImage: "sofa.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Button(action: model.startWork) {
+                    Text("要加班？带上鸡丝")
+                }
+                .buttonStyle(.borderless)
+                .font(.footnote)
+                .disabled(model.isBusy)
+            }
+            .frame(maxWidth: .infinity)
         } else {
             Button(action: model.startWork) {
                 Label("带鸡丝上班", systemImage: "briefcase.fill").frame(maxWidth: .infinity)
