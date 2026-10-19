@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in Reminders.shared.registerCategories() }
+        PhoneWatchLink.shared.start()
         return true
     }
 

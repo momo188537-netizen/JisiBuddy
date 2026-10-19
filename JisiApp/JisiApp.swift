@@ -13,6 +13,10 @@ struct JisiApp: App {
             HomeView()
                 .environment(model)
                 .tint(.orange)
+                // 手表上点了上班 / 下班（App 开着的时候）首页跟着变
+                .onReceive(NotificationCenter.default.publisher(for: .jisiWorkStateDidChange)) { _ in
+                    model.refresh()
+                }
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { model.onForeground() }

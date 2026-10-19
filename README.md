@@ -9,6 +9,7 @@
 | `JisiKit/` | 本地 Swift Package：模型、CatBrain 状态引擎、App Group 存储、SwiftData 日志、App Intents、ActivityAttributes、`JisiCatView`（头像 + 程序动画） |
 | `JisiApp/` | App：首页小窝、设置、本地提醒 |
 | `JisiWidgets/` | Widget Extension：锁屏 Widget（rectangular / circular）+ Live Activity / 灵动岛 |
+| `JisiWatch/`、`JisiWatchWidgets/` | Apple Watch App + 表盘复杂功能（见 `WATCH_README.md`） |
 | `Config/` | entitlements（App Group `group.com.zixu.jisibuddy`）、扩展 Info.plist |
 | `scripts/` | `test-kit.sh` 跑单元测试，`import-jisi.sh` 导入鸡丝头像，`gen-xcodeproj.py` 生成工程 |
 

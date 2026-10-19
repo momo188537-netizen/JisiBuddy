@@ -105,8 +105,10 @@ public final class LiveActivityController {
     public var areActivitiesEnabled: Bool { ActivityAuthorizationInfo().areActivitiesEnabled }
 
     /// 「带鸡丝上班」。如果已有进行中的会话就沿用它（恢复）。同一时间最多一个 Live Activity。
+    /// - allowWithoutActivity: 手表发来的「上班」用。App 在后台时系统不让开始实时活动，这时照样记下会话，
+    ///   回到 App 时首页会出现「继续陪伴」把实时活动补上。
     @discardableResult
-    public func startWork(now: Date = Date(), calendar: Calendar = .current) async throws -> WorkSession {
+    public func startWork(now: Date = Date(), calendar: Calendar = .current, allowWithoutActivity: Bool = false) async throws -> WorkSession {
         var session: WorkSession
         if let s = store.session, s.isOpen, now < s.expectedClockOut {
             session = s
@@ -127,28 +129,34 @@ public final class LiveActivityController {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
 
-        let activity: Activity<JisiActivityAttributes>
+        let activity: Activity<JisiActivityAttributes>?
         if let id = plan.reuse, let existing = activities.first(where: { $0.id == id }) {
             activity = existing
-            await activity.update(content(now: now, session: session))
+            await existing.update(content(now: now, session: session))
         } else {
             let attributes = JisiActivityAttributes(
                 sessionID: session.id,
                 startedAt: session.startedAt,
                 expectedClockOut: session.expectedClockOut
             )
-            activity = try Activity.request(
-                attributes: attributes,
-                content: content(now: now, session: session),
-                pushType: nil
-            )
+            do {
+                activity = try Activity.request(
+                    attributes: attributes,
+                    content: content(now: now, session: session),
+                    pushType: nil
+                )
+            } catch {
+                guard allowWithoutActivity else { throw error }
+                activity = nil
+            }
         }
-        session.activityID = activity.id
+        session.activityID = activity?.id
         store.session = session
-        observe(activity)
+        if let activity { observe(activity) }
         WidgetCenter.shared.reloadAllTimelines()
         Self.reloadControls()
         await ClockOutNotice.schedule(for: session, store: store, now: now)
+        NotificationCenter.default.post(name: .jisiWorkStateDidChange, object: nil)
         return session
     }
 
@@ -173,6 +181,7 @@ public final class LiveActivityController {
         }
         WidgetCenter.shared.reloadAllTimelines()
         Self.reloadControls()
+        NotificationCenter.default.post(name: .jisiWorkStateDidChange, object: nil)
     }
 
     /// 互动或事件之后把最新快照推给 Live Activity。

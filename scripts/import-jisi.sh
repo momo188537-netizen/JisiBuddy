@@ -9,3 +9,7 @@ echo "已导入到 $OUT"
 MONO="$(dirname "$0")/../JisiKit/Sources/JisiKit/Resources/JisiFaceMono.png"
 swift "$(dirname "$0")/mono-face.swift" "$OUT" "$MONO" 144
 echo "已生成锁屏单色头像 $MONO"
+W="$(dirname "$0")/../JisiKit/Sources/JisiWatchKit/Resources"
+sips -s format png -Z 256 "$OUT" --out "$W/WatchFace.png" >/dev/null
+sips -s format png -Z 84 "$OUT" --out "$W/WatchFaceSmall.png" >/dev/null
+echo "已生成手表头像 $W/WatchFace.png、WatchFaceSmall.png"
