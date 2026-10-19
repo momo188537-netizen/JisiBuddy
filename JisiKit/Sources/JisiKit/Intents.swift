@@ -43,6 +43,8 @@ public struct PetJisiIntent: JisiInteractiveIntent {
     public static let title: LocalizedStringResource = "摸摸鸡丝"
     public static let description = IntentDescription("摸一摸鸡丝的头。")
     public static let openAppWhenRun = false
+    /// 锁屏卡片上不用解锁就能点（只改鸡丝自己的状态，不涉及隐私）。
+    public static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     public init() {}
 
@@ -57,6 +59,8 @@ public struct FeedJisiIntent: JisiInteractiveIntent {
     public static let title: LocalizedStringResource = "给鸡丝喂小鱼干"
     public static let description = IntentDescription("喂鸡丝一根小鱼干。")
     public static let openAppWhenRun = false
+    /// 锁屏卡片上不用解锁就能点（只改鸡丝自己的状态，不涉及隐私）。
+    public static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     public init() {}
 
@@ -71,6 +75,8 @@ public struct FeedJisiIntent: JisiInteractiveIntent {
 public struct AteMealIntent: AppIntent {
     public static let title: LocalizedStringResource = "我吃饭了"
     public static let openAppWhenRun = false
+    /// 锁屏卡片上不用解锁就能点（只改鸡丝自己的状态，不涉及隐私）。
+    public static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     public init() {}
 
@@ -85,6 +91,8 @@ public struct AteMealIntent: AppIntent {
 public struct ClockOutIntent: JisiInteractiveIntent {
     public static let title: LocalizedStringResource = "和鸡丝一起下班"
     public static let openAppWhenRun = false
+    /// 锁屏卡片上不用解锁就能点（只改鸡丝自己的状态，不涉及隐私）。
+    public static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
 
     public init() {}
 
