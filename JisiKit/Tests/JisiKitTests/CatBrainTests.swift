@@ -106,6 +106,15 @@ struct CatBrainTests {
         #expect(Lines.ateMeal.contains(CatBrain.snapshot(input(now, events: events)).line))
     }
 
+    /// 通知里点「吃了」：鸡丝也吃小鱼干；其他事件不吃。
+    @Test func ateMealShowsFedPose() {
+        let now = date(12, 5)
+        let ate = CatBrain.snapshot(input(now, events: [CatEvent(kind: .ateMeal, date: now.addingTimeInterval(-30))]))
+        #expect(ate.pose == .fed)
+        let rested = CatBrain.snapshot(input(now, events: [CatEvent(kind: .tookBreak, date: now.addingTimeInterval(-30))]))
+        #expect(rested.pose != .fed)
+    }
+
     @Test func noToysStillWorks() {
         var i = input(date(10, 0))
         i.toys = []

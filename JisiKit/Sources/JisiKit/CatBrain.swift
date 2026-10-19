@@ -103,7 +103,9 @@ public enum CatBrain {
         case .ateMeal: Lines.ateMeal.pick(seed)
         case .tookBreak: Lines.tookBreak.pick(seed)
         }
-        return CatSnapshot(pose: .lounging, line: line, date: input.now)
+        // 用户吃饭了，鸡丝也吃小鱼干（PRD 第 4 节）。
+        let pose: CatPose = e.kind == .ateMeal ? .fed : .lounging
+        return CatSnapshot(pose: pose, line: line, date: input.now)
     }
 
     // MARK: - 自主行为
