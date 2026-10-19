@@ -83,6 +83,13 @@ public final class LiveActivityController {
         }
     }
 
+    /// 控制中心「鸡丝上班」开关的 kind
+    public static let controlKind = "JisiWorkControl"
+
+    static func reloadControls() {
+        if #available(iOS 18.0, *) { ControlCenter.shared.reloadControls(ofKind: controlKind) }
+    }
+
     static func isAlive(_ activity: Activity<JisiActivityAttributes>) -> Bool {
         activity.activityState == .active || activity.activityState == .stale
     }
@@ -137,6 +144,7 @@ public final class LiveActivityController {
         store.session = session
         observe(activity)
         WidgetCenter.shared.reloadAllTimelines()
+        Self.reloadControls()
         await ClockOutNotice.schedule(for: session, store: store, now: now)
         return session
     }
@@ -156,6 +164,7 @@ public final class LiveActivityController {
             await activity.end(final, dismissalPolicy: .after(now.addingTimeInterval(60)))
         }
         WidgetCenter.shared.reloadAllTimelines()
+        Self.reloadControls()
     }
 
     /// 互动或事件之后把最新快照推给 Live Activity。

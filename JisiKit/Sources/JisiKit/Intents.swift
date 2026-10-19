@@ -117,3 +117,90 @@ public enum JisiActions {
     /// 在小窝里点了毛线球 / 纸箱 / 软垫
     public static func play(_ item: NestItem) async { await InteractionHandler.handle(item.interaction) }
 }
+
+#if os(iOS)
+import ActivityKit
+
+/// 「带鸡丝上班」：Siri、快捷指令、控制中心都用它。是 LiveActivityIntent，所以 App 不在前台也能直接开始实时活动
+/// （iOS 17 起 LiveActivityStartingIntent 已废弃，SDK 注明改用 LiveActivityIntent）。
+public struct StartWorkIntent: LiveActivityIntent {
+    public static let title: LocalizedStringResource = "带鸡丝上班"
+    public static let description = IntentDescription("开始带鸡丝上班，锁屏和灵动岛会出现鸡丝。")
+    public static let openAppWhenRun = false
+
+    public init() {}
+
+    @MainActor
+    public func perform() async throws -> some IntentResult & ProvidesDialog {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            return .result(dialog: "实时活动被关掉了，可以在 设置 > 鸡丝 里打开。")
+        }
+        try await LiveActivityController.shared.startWork()
+        return .result(dialog: "鸡丝出发啦，一起上班！")
+    }
+}
+
+/// 快捷指令 / Siri 用的「一起下班」（带一句回应）。
+public struct ClockOutShortcutIntent: LiveActivityIntent {
+    public static let title: LocalizedStringResource = "和鸡丝一起下班"
+    public static let description = IntentDescription("结束今天的陪伴，鸡丝回小窝。")
+    public static let openAppWhenRun = false
+
+    public init() {}
+
+    @MainActor
+    public func perform() async throws -> some IntentResult & ProvidesDialog {
+        await LiveActivityController.shared.endWork()
+        return .result(dialog: "下班啦，回小窝咯。")
+    }
+}
+
+/// 控制中心的开关：开 = 带鸡丝上班，关 = 一起下班。
+@available(iOS 18.0, *)
+public struct SetWorkingIntent: SetValueIntent, LiveActivityIntent {
+    public static let title: LocalizedStringResource = "鸡丝上班"
+    public static let openAppWhenRun = false
+
+    @Parameter(title: "上班中")
+    public var value: Bool
+
+    public init() {}
+
+    @MainActor
+    public func perform() async throws -> some IntentResult {
+        if value {
+            if ActivityAuthorizationInfo().areActivitiesEnabled {
+                try await LiveActivityController.shared.startWork()
+            }
+        } else {
+            await LiveActivityController.shared.endWork()
+        }
+        return .result()
+    }
+}
+
+/// 专注模式过滤器：在「工作」专注模式里加上「鸡丝」并打开「自动带鸡丝上班」，专注开启时就自动上班。
+/// 同时是 LiveActivityIntent，后台也能开始实时活动。专注结束时系统会用默认值（关）再调用一次，不做任何事。
+public struct JisiFocusFilter: SetFocusFilterIntent, LiveActivityIntent {
+    public static let title: LocalizedStringResource = "鸡丝"
+    public static let description: IntentDescription? = IntentDescription("开启这个专注模式时，自动带鸡丝上班。")
+
+    @Parameter(title: "自动带鸡丝上班", default: false)
+    public var autoClockIn: Bool
+
+    public init() {}
+
+    public var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: autoClockIn ? "自动带鸡丝上班" : "不自动上班")
+    }
+
+    @MainActor
+    public func perform() async throws -> some IntentResult {
+        guard autoClockIn, ActivityAuthorizationInfo().areActivitiesEnabled else { return .result() }
+        if SharedStore.shared.session?.isOpen != true {
+            try await LiveActivityController.shared.startWork()
+        }
+        return .result()
+    }
+}
+#endif

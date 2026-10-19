@@ -62,7 +62,7 @@ app = {
     "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
     "CODE_SIGN_ENTITLEMENTS": "Config/JisiApp.entitlements",
     "CODE_SIGN_STYLE": "Automatic",
-    "CURRENT_PROJECT_VERSION": "2",
+    "CURRENT_PROJECT_VERSION": "3",
     "GENERATE_INFOPLIST_FILE": "YES",
     "INFOPLIST_KEY_CFBundleDisplayName": "鸡丝",
     "INFOPLIST_KEY_NSSupportsLiveActivities": "YES",
@@ -80,7 +80,7 @@ app = {
 widget = {
     "CODE_SIGN_ENTITLEMENTS": "Config/JisiWidgets.entitlements",
     "CODE_SIGN_STYLE": "Automatic",
-    "CURRENT_PROJECT_VERSION": "2",
+    "CURRENT_PROJECT_VERSION": "3",
     "GENERATE_INFOPLIST_FILE": "YES",
     "INFOPLIST_FILE": "Config/JisiWidgets-Info.plist",
     "INFOPLIST_KEY_CFBundleDisplayName": "鸡丝",

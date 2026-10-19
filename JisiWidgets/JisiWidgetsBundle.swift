@@ -8,6 +8,9 @@ struct JisiWidgetsBundle: WidgetBundle {
     var body: some Widget {
         JisiLockScreenWidget()
         JisiLiveActivity()
+        if #available(iOS 18.0, *) {
+            JisiWorkControl()
+        }
     }
 }
 

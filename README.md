@@ -56,6 +56,14 @@ xcodebuild -project JisiBuddy.xcodeproj -scheme JisiApp -destination 'generic/pl
 
 老版本升级时会用 SwiftData 日志补算一次（`JisiLog.backfillDiaryIfNeeded`），补出来的纪念只提示最新一条。
 
+## 一键上班
+
+- **Siri / 快捷指令**：App 自带两个快捷指令「带鸡丝上班」「和鸡丝一起下班」（`JisiShortcuts`），可以直接对 Siri 说「带鸡丝上班」，或在快捷指令里调用。
+- **控制中心**：iOS 18 起可在控制中心（以及锁屏底部、操作按钮）添加「带鸡丝上班」开关（`JisiWorkControl`），开 = 上班，关 = 一起下班。
+- **App 不在前台也能开始实时活动**：这些动作都是 `LiveActivityIntent`，在 App 进程后台执行。SDK 里 `LiveActivityStartingIntent` 自 iOS 17 起废弃并注明改用 `LiveActivityIntent`，所以不需要打开 App。
+- **「工作」专注模式自动上班**：设置 > 专注模式 > 工作 > 专注模式过滤条件 > 添加过滤条件 > 鸡丝，打开「自动带鸡丝上班」。专注开启时会自动上班（`JisiFocusFilter`）；专注结束时不会自动下班。
+- **到公司自动上班（不在 App 里用定位）**：快捷指令 App > 自动化 > 新建 >「到达」> 选公司地址 > 选「立即运行」> 添加操作「带鸡丝上班」。下班同理用「离开」+「和鸡丝一起下班」。
+
 ## 已知限制（2026-10-19 iPhone 16 Pro Max / iOS 27 实测）
 
 - 锁屏卡片（Live Activity）上的按钮：手机锁着时点按钮会先要求面容 ID，认证后直接在锁屏执行，不会打开 App。按钮的 intent 已设为 `authenticationPolicy = .alwaysAllowed`（打包后的元数据里确认生效），所以这一步是 iOS 自己要求的。
