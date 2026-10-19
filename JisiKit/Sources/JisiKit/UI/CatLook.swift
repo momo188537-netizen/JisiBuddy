@@ -67,8 +67,8 @@ public struct CatLook: Hashable, Sendable {
 
     /// 眼睛在头像图里的相对位置（0–1）。拿到鸡丝真图后按照片微调。
     public enum FaceGeometry {
-        public static let leftEye = CGPoint(x: 0.36, y: 0.50)
-        public static let rightEye = CGPoint(x: 0.64, y: 0.50)
-        public static let eyeSize = CGSize(width: 0.17, height: 0.10)
+        public static let leftEye = CGPoint(x: 0.39, y: 0.445)
+        public static let rightEye = CGPoint(x: 0.65, y: 0.52)
+        public static let eyeSize = CGSize(width: 0.13, height: 0.09)
     }
 }

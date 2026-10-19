@@ -229,7 +229,7 @@ struct Ear: Shape {
 }
 
 public enum JisiArt {
-    public static let furColor = Color(red: 0.96, green: 0.66, blue: 0.33)
+    public static let furColor = Color(red: 0.91, green: 0.62, blue: 0.36)
 
     /// JisiKit/Sources/JisiKit/Resources/JisiFace.png（已水平翻转、缩到 512px）。
     public static let face: Image? = {
