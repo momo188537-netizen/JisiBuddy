@@ -21,3 +21,9 @@ xcodebuild -project JisiBuddy.xcodeproj -scheme JisiApp -destination 'generic/pl
 ```
 
 签名：Xcode 里给 JisiApp、JisiWidgets 两个 target 选你的个人团队；如果 bundle id 冲突，改 `com.zixu.jisibuddy` 前缀（App Group id 在 `Config/*.entitlements` 和 `JisiConfig.appGroupID` 里要同步改）。
+
+## 已知限制（2026-10-19 iPhone 16 Pro Max / iOS 27 实测）
+
+- 锁屏卡片（Live Activity）上的按钮：手机锁着时点按钮会先要求面容 ID，认证后直接在锁屏执行，不会打开 App。按钮的 intent 已设为 `authenticationPolicy = .alwaysAllowed`（打包后的元数据里确认生效），所以这一步是 iOS 自己要求的。
+- 锁屏小组件（accessoryRectangular / accessoryCircular）只能单色显示，用户觉得不好看，已暂时隐藏；代码和单色高对比度头像 `JisiFaceMono.png` 都保留着，在 `LockScreenWidget.swift` 的 `supportedFamilies` 里加回来就能恢复。主屏幕 / 待机用彩色的 systemSmall 小组件。
+- 免费开发者账号签的 App 大约 7 天后会过期，需要重新编译安装。
