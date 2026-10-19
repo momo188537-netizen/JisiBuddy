@@ -44,6 +44,8 @@ struct JisiLockScreenWidget: Widget {
 struct LockScreenView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.widgetRenderingMode) private var renderingMode
+    /// 待机（StandBy）等场景系统会去掉背景，这时文字要用浅色
+    @Environment(\.showsWidgetContainerBackground) private var showsBackground
     var entry: CatEntry
 
     var body: some View {
@@ -55,7 +57,7 @@ struct LockScreenView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Text(entry.snapshot.line)
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(Color(red: 0.35, green: 0.2, blue: 0.1))
+                    .foregroundStyle(showsBackground ? Color(red: 0.35, green: 0.2, blue: 0.1) : .white)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }

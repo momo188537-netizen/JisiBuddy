@@ -81,15 +81,18 @@ func headline(_ context: ActivityViewContext<JisiActivityAttributes>) -> String 
 
 struct LockScreenActivityView: View {
     let context: ActivityViewContext<JisiActivityAttributes>
+    @Environment(\.isActivityFullscreen) private var fullscreen
 
     var body: some View {
-        VStack(spacing: 10) {
+        // 待机（StandBy）全屏时，鸡丝画大一点
+        let catSize: CGFloat = fullscreen ? 120 : 64
+        VStack(spacing: fullscreen ? 16 : 10) {
             HStack(spacing: 12) {
                 JisiCatView(pose: displayPose(context), animated: false)
-                    .frame(width: 64, height: 64)
+                    .frame(width: catSize, height: catSize)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(headline(context))
-                        .font(.headline)
+                        .font(fullscreen ? .title2.weight(.semibold) : .headline)
                         .lineLimit(1)
                     HStack(spacing: 4) {
                         Text("已陪伴")
