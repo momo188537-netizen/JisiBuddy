@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "JisiKit", targets: ["JisiKit"]),
     ],
     targets: [
-        .target(name: "JisiKit"),
+        .target(name: "JisiKit", resources: [.process("Resources")]),
         .testTarget(name: "JisiKitTests", dependencies: ["JisiKit"]),
     ]
 )
