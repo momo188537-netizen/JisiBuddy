@@ -24,6 +24,7 @@ final class Reminders {
         center.setNotificationCategories([
             UNNotificationCategory(identifier: ID.mealCategory, actions: [ate], intentIdentifiers: []),
             UNNotificationCategory(identifier: ID.breakCategory, actions: [rested], intentIdentifiers: []),
+            ClockOutNotice.notificationCategory,
         ])
     }
 
@@ -106,6 +107,14 @@ final class Reminders {
                                          trigger: trigger))
     }
 
+    /// 调试用：1 分钟后发一条下班提醒，带「一起下班」按钮。
+    func sendTestClockOut() async {
+        guard await requestAuthorizationIfNeeded() else { return }
+        try? await center.add(UNNotificationRequest(identifier: "jisi.test.clockout",
+                                                    content: ClockOutNotice.content(body: "（测试）到下班时间啦，鸡丝想回家了～"),
+                                                    trigger: UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)))
+    }
+
     private func components(_ p: Planned) -> DateComponents {
         var date = DateComponents()
         date.weekday = p.weekday
@@ -152,6 +161,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         switch response.actionIdentifier {
         case Reminders.ID.ateAction: await JisiActions.ateMeal()
         case Reminders.ID.restedAction: await JisiActions.tookBreak()
+        case ClockOutNotice.clockOutAction: await LiveActivityController.shared.endWork()
         default: break
         }
     }

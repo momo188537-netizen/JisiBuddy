@@ -137,6 +137,7 @@ public final class LiveActivityController {
         store.session = session
         observe(activity)
         WidgetCenter.shared.reloadAllTimelines()
+        await ClockOutNotice.schedule(for: session, store: store, now: now)
         return session
     }
 
@@ -149,6 +150,7 @@ public final class LiveActivityController {
             store.record(CatEvent(kind: .clockOut, date: now))
             JisiLog.append(CatEventKind.clockOut.rawValue, at: now)
         }
+        ClockOutNotice.cancel(store: store, now: now)
         let final = ActivityContent(state: endedState(now: now), staleDate: nil)
         for activity in Activity<JisiActivityAttributes>.activities {
             await activity.end(final, dismissalPolicy: .after(now.addingTimeInterval(60)))

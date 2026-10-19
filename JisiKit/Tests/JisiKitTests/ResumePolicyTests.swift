@@ -142,3 +142,44 @@ extension ArtTests {
         #expect(JisiArt.monoFace != nil)
     }
 }
+
+struct ClockOutNoticeTests {
+    let calendar: Calendar = {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        return c
+    }()
+    func date(_ day: Int, _ h: Int, _ m: Int = 0) -> Date {
+        calendar.date(from: DateComponents(year: 2026, month: 10, day: day, hour: h, minute: m))!
+    }
+
+    @Test func firesAtClockOutOnWorkday() {
+        let s = WorkSession(startedAt: date(20, 9), expectedClockOut: date(20, 18, 30))
+        #expect(ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: nil, now: date(20, 9), calendar: calendar) == date(20, 18, 30))
+    }
+
+    @Test func notAfterClockingOutOrPastTime() {
+        var s = WorkSession(startedAt: date(20, 9), expectedClockOut: date(20, 18, 30))
+        #expect(ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: nil, now: date(20, 19), calendar: calendar) == nil)
+        s.userEnded = true
+        #expect(ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: nil, now: date(20, 9), calendar: calendar) == nil)
+    }
+
+    @Test func notOnRestDays() {
+        // 2026-10-24 周六
+        let s = WorkSession(startedAt: date(24, 10), expectedClockOut: date(24, 18))
+        #expect(ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: nil, now: date(24, 10), calendar: calendar) == nil)
+    }
+
+    @Test func atMostOncePerDay() {
+        let s = WorkSession(startedAt: date(20, 19), expectedClockOut: date(20, 23))
+        #expect(ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: 20261020, now: date(20, 19), calendar: calendar) == nil)
+        #expect(ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: 20261019, now: date(20, 19), calendar: calendar) != nil)
+    }
+
+    @Test func deliveredOnlyIfTimePassed() {
+        #expect(ClockOutNotice.deliveredDay(scheduledAt: date(20, 18), previous: nil, now: date(20, 19), calendar: calendar) == 20261020)
+        // 提前下班取消了，没发出去，不算
+        #expect(ClockOutNotice.deliveredDay(scheduledAt: date(20, 18), previous: nil, now: date(20, 17), calendar: calendar) == nil)
+    }
+}

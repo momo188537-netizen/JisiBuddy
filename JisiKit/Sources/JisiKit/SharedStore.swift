@@ -27,7 +27,7 @@ public final class SharedStore: @unchecked Sendable {
     }
 
     enum Key: String {
-        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary, preferences
+        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary, preferences, clockOutNoticeAt, clockOutNoticeDeliveredDay
     }
 
     func get<T: Decodable>(_ key: Key, as type: T.Type = T.self) -> T? {
@@ -83,6 +83,18 @@ public final class SharedStore: @unchecked Sendable {
     public var session: WorkSession? {
         get { get(.session) }
         set { set(newValue, for: .session) }
+    }
+
+    /// 下班通知排在什么时候（没排就是 nil）
+    public var clockOutNoticeAt: Date? {
+        get { get(.clockOutNoticeAt) }
+        set { set(newValue, for: .clockOutNoticeAt) }
+    }
+
+    /// 最近一次下班通知发出的日子（yyyymmdd），每天最多一次
+    public var clockOutNoticeDeliveredDay: Int? {
+        get { get(.clockOutNoticeDeliveredDay) }
+        set { set(newValue, for: .clockOutNoticeDeliveredDay) }
     }
 
     public var preferences: Preferences {
