@@ -49,12 +49,10 @@ struct LockScreenView: View {
                 JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false)
                     .padding(4)
             }
-            .widgetAccentable()
         default:
             HStack(spacing: 6) {
                 JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false)
                     .frame(width: 44, height: 44)
-                    .widgetAccentable()
                 VStack(alignment: .leading, spacing: 2) {
                     Text("鸡丝 · \(entry.snapshot.pose.displayName)")
                         .font(.caption2.weight(.semibold))

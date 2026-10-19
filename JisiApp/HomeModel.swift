@@ -14,6 +14,7 @@ final class HomeModel {
     private(set) var isWorking = false
     private(set) var offerResume = false
     private(set) var session: WorkSession?
+    private(set) var isBusy = false
     var errorMessage: String?
 
     var schedule: Schedule {
@@ -51,7 +52,7 @@ final class HomeModel {
     func refresh(now: Date = Date()) {
         snapshot = store.snapshot(at: now)
         session = store.session
-        isWorking = live.isRunning
+        isWorking = live.isWorking
         offerResume = live.shouldOfferResume(now: now)
     }
 
@@ -77,17 +78,25 @@ final class HomeModel {
             errorMessage = "实时活动被关掉了，可以在 设置 > 鸡丝 里打开。"
             return
         }
-        do {
-            try live.startWork()
-        } catch {
-            errorMessage = "鸡丝没能出门：\(error.localizedDescription)"
+        guard !isBusy else { return }
+        isBusy = true
+        Task {
+            do {
+                try await live.startWork()
+            } catch {
+                errorMessage = "鸡丝没能出门：\(error.localizedDescription)"
+            }
+            isBusy = false
+            refresh()
         }
-        refresh()
     }
 
     func endWork() {
+        guard !isBusy else { return }
+        isBusy = true
         Task {
             await live.endWork()
+            isBusy = false
             refresh()
         }
     }

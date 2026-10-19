@@ -59,6 +59,7 @@ proj_release = dict(common_proj, **{
     "VALIDATE_PRODUCT": "YES",
 })
 app = {
+    "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
     "CODE_SIGN_ENTITLEMENTS": "Config/JisiApp.entitlements",
     "CODE_SIGN_STYLE": "Automatic",
     "CURRENT_PROJECT_VERSION": "1",

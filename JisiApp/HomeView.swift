@@ -91,6 +91,7 @@ struct HomeView: View {
             Spacer()
             Button("继续陪伴", action: model.startWork)
                 .buttonStyle(.borderedProminent)
+                .disabled(model.isBusy)
         }
         .padding()
         .background(Color.orange.opacity(0.12), in: .rect(cornerRadius: 14))
@@ -112,6 +113,7 @@ struct HomeView: View {
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.large)
+                .disabled(model.isBusy)
             }
         } else {
             Button(action: model.startWork) {
@@ -119,6 +121,7 @@ struct HomeView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .disabled(model.isBusy)
         }
     }
 

@@ -7,4 +7,5 @@ L=/Library/Developer/CommandLineTools/Library/Developer/usr/lib
 if [ -d "$F/Testing.framework" ] && ! xcode-select -p | grep -q Xcode.app; then
   exec swift test -Xswiftc -DJISI_NO_SWIFTDATA -Xswiftc -F$F -Xlinker -F$F -Xlinker -rpath -Xlinker $F -Xlinker -rpath -Xlinker $L "$@"
 fi
-exec swift test "$@"
+# 构建目录放在 iCloud 桌面外：iCloud 加的扩展属性会让测试包签名失败。
+exec swift test --scratch-path "${TMPDIR:-/tmp}/jisikit-build" "$@"

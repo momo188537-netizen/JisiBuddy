@@ -23,12 +23,14 @@ struct JisiLiveActivity: Widget {
                     }
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    Text(context.isStale ? "到点啦，一起下班吧" : context.state.line)
+                    Text(headline(context))
                         .font(.callout)
                         .lineLimit(1)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    ActivityButtons(isStale: context.isStale)
+                    if context.state.endedAt == nil {
+                        ActivityButtons(isStale: context.isStale)
+                    }
                 }
             } compactLeading: {
                 face(context).frame(width: 24, height: 24)
@@ -48,9 +50,18 @@ struct JisiLiveActivity: Widget {
     }
 }
 
-/// 陪伴时长：从上班开始正着数，系统自己走秒，不需要更新活动。
+/// 陪伴时长：从上班开始正着数，系统自己走秒，不需要更新活动；下班后停在下班那一刻。
 func companionTimer(_ context: ActivityViewContext<JisiActivityAttributes>) -> Text {
-    Text(timerInterval: context.attributes.startedAt...Date.distantFuture, countsDown: false)
+    if let end = context.state.endedAt {
+        let start = context.attributes.startedAt
+        return Text(timerInterval: start...max(start, end), pauseTime: end, countsDown: false)
+    }
+    return Text(timerInterval: context.attributes.startedAt...Date.distantFuture, countsDown: false)
+}
+
+func headline(_ context: ActivityViewContext<JisiActivityAttributes>) -> String {
+    if context.state.endedAt != nil { return context.state.line }
+    return context.isStale ? "到点啦，一起下班吧" : context.state.line
 }
 
 struct LockScreenActivityView: View {
@@ -62,7 +73,7 @@ struct LockScreenActivityView: View {
                 JisiCatView(pose: context.state.pose, animated: false)
                     .frame(width: 64, height: 64)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(context.isStale ? "到点啦，一起下班吧" : context.state.line)
+                    Text(headline(context))
                         .font(.headline)
                         .lineLimit(1)
                     HStack(spacing: 4) {
@@ -79,12 +90,15 @@ struct LockScreenActivityView: View {
                 }
                 Spacer(minLength: 0)
             }
-            ActivityButtons(isStale: context.isStale)
+            if context.state.endedAt == nil {
+                ActivityButtons(isStale: context.isStale)
+            }
         }
         .padding()
     }
 }
 
+/// 锁屏上不用解锁就能点（LiveActivityIntent 在 App 进程里后台执行）。
 struct ActivityButtons: View {
     var isStale: Bool
 
@@ -99,7 +113,7 @@ struct ActivityButtons: View {
             Button(intent: ClockOutIntent()) {
                 Label("一起下班", systemImage: "house.fill").frame(maxWidth: .infinity)
             }
-            .tint(isStale ? .orange : .gray)
+            .buttonStyle(.borderedProminent)
         }
         .font(.caption.weight(.semibold))
         .buttonStyle(.bordered)

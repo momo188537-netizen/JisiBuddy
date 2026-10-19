@@ -1,3 +1,4 @@
+import ImageIO
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
@@ -84,7 +85,7 @@ public struct JisiCatView: View {
         }()
 
         ZStack {
-            head(eyes: eyes, side: side)
+            head(eyes: eyes, side: side, small: t == nil)
                 .scaleEffect(breathe, anchor: .bottom)
                 .rotationEffect(.degrees(tilt), anchor: .bottom)
                 .offset(y: look.droop * side)
@@ -118,9 +119,9 @@ public struct JisiCatView: View {
         .frame(width: side, height: side)
     }
 
-    func head(eyes: CatLook.EyeState, side: CGFloat) -> some View {
+    func head(eyes: CatLook.EyeState, side: CGFloat, small: Bool) -> some View {
         ZStack {
-            if let image = JisiArt.face {
+            if let image = small ? JisiArt.smallFace : JisiArt.face {
                 image.resizable().scaledToFit()
             } else {
                 PlaceholderFace()
@@ -232,12 +233,39 @@ public enum JisiArt {
     public static let furColor = Color(red: 0.91, green: 0.62, blue: 0.36)
 
     /// JisiKit/Sources/JisiKit/Resources/JisiFace.png（已水平翻转、缩到 512px）。
-    public static let face: Image? = {
-        guard let url = Bundle.module.url(forResource: "JisiFace", withExtension: "png") else { return nil }
+    public static let face: Image? = load(maxPixel: nil)
+
+    /// 静帧用的小图（锁屏 Widget、Live Activity）。Widget 归档时图片像素面积不能超过 Widget 本身，
+    /// 512px 原图放进圆形 / 长方形锁屏 Widget 会渲染失败，只剩灰色占位。
+    public static let smallFace: Image? = load(maxPixel: smallFacePixels)
+    static let smallFacePixels = 144
+
+    static var faceURL: URL? { Bundle.module.url(forResource: "JisiFace", withExtension: "png") }
+
+    static func load(maxPixel: Int?) -> Image? {
+        guard let url = faceURL else { return nil }
+        guard let maxPixel else {
+            #if canImport(UIKit)
+            return UIImage(contentsOfFile: url.path).map { Image(uiImage: $0) }
+            #else
+            return NSImage(contentsOf: url).map { Image(nsImage: $0) }
+            #endif
+        }
+        guard let cg = thumbnail(url: url, maxPixel: maxPixel) else { return nil }
         #if canImport(UIKit)
-        return UIImage(contentsOfFile: url.path).map { Image(uiImage: $0) }
+        return Image(uiImage: UIImage(cgImage: cg))
         #else
-        return NSImage(contentsOf: url).map { Image(nsImage: $0) }
+        return Image(nsImage: NSImage(cgImage: cg, size: CGSize(width: cg.width, height: cg.height)))
         #endif
-    }()
+    }
+
+    static func thumbnail(url: URL, maxPixel: Int) -> CGImage? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceThumbnailMaxPixelSize: maxPixel,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+        ]
+        return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
+    }
 }
