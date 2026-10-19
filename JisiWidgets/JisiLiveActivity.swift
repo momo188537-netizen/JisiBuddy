@@ -105,18 +105,33 @@ struct ActivityButtons: View {
     var body: some View {
         HStack(spacing: 8) {
             Button(intent: PetJisiIntent()) {
-                Label("摸摸", systemImage: "hand.raised.fill").frame(maxWidth: .infinity)
+                Label("摸摸", systemImage: "hand.raised.fill")
             }
+            .buttonStyle(SolidButtonStyle(fill: .orange))
             Button(intent: FeedJisiIntent()) {
-                Label("喂食", systemImage: "fish.fill").frame(maxWidth: .infinity)
+                Label("喂食", systemImage: "fish.fill")
             }
+            .buttonStyle(SolidButtonStyle(fill: .orange))
             Button(intent: ClockOutIntent()) {
-                Label("一起下班", systemImage: "house.fill").frame(maxWidth: .infinity)
+                Label("一起下班", systemImage: "house.fill")
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(SolidButtonStyle(fill: Color(red: 0.45, green: 0.26, blue: 0.13)))
         }
         .font(.caption.weight(.semibold))
-        .buttonStyle(.bordered)
-        .tint(.orange)
+    }
+}
+
+/// 实心底 + 白字：系统自带的 .bordered 在锁屏半透明背景上太淡，像被禁用。
+struct SolidButtonStyle: ButtonStyle {
+    var fill: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .labelStyle(.titleAndIcon)
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .frame(maxWidth: .infinity, minHeight: 34)
+            .background(fill.opacity(configuration.isPressed ? 0.7 : 1), in: .capsule)
     }
 }
