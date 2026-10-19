@@ -5,13 +5,18 @@ import SwiftUI
 struct HomeView: View {
     @Environment(HomeModel.self) private var model
     @State private var showSettings = false
+    @State private var showMemories = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     if model.offerResume { resumeBanner }
-                    if let gift = model.diary.pendingGift { giftBanner(gift) }
+                    if let gift = model.diary.pendingGift {
+                        giftBanner(gift)
+                    } else if let memory = model.diary.unseenMemory {
+                        memoryCard(memory)
+                    }
 
                     nest
 
@@ -21,6 +26,8 @@ struct HomeView: View {
                     }
 
                     workButton
+
+                    TodayView(today: model.diary.today.day == Diary.dayKey(Date(), calendar: .current) ? model.diary.today : DayCounts())
 
                     if !model.appGroupOK {
                         Label("App Group 未签出：锁屏小组件暂时看不到互动，只会按作息自己演。", systemImage: "exclamationmark.triangle")
@@ -33,9 +40,11 @@ struct HomeView: View {
             .background(Color.orange.opacity(0.06).ignoresSafeArea())
             .navigationTitle("鸡丝的小窝")
             .toolbar {
+                Button("纪念册", systemImage: "book.closed") { showMemories = true }
                 Button("设置", systemImage: "gearshape") { showSettings = true }
             }
             .sheet(isPresented: $showSettings) { SettingsView() }
+            .sheet(isPresented: $showMemories) { MemoriesView() }
             .alert("哎呀", isPresented: .constant(model.errorMessage != nil)) {
                 Button("好") { model.errorMessage = nil }
             } message: {
@@ -78,6 +87,23 @@ struct HomeView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    /// 低频：只在有新纪念时出现一次，收起后不再出现。
+    private func memoryCard(_ memory: Memory) -> some View {
+        HStack(spacing: 12) {
+            JisiArt.prop("PropSparkles").frame(width: 36, height: 36)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(memory.title).font(.subheadline.weight(.semibold))
+                Text(memory.detail).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            Button("收起", action: model.markMemoriesSeen)
+                .buttonStyle(.bordered)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.08), in: .rect(cornerRadius: 14))
+        .onTapGesture { showMemories = true }
     }
 
     private func giftBanner(_ item: NestItem) -> some View {

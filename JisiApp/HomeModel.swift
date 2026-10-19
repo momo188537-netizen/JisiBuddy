@@ -102,6 +102,14 @@ final class HomeModel {
     }
     #endif
 
+    /// 首页的回忆卡片看过了
+    func markMemoriesSeen() {
+        var d = store.diary
+        d.markMemoriesSeen()
+        store.diary = d
+        refresh()
+    }
+
     /// 关掉「得到了新物件」的提示
     func dismissGift() {
         var d = store.diary
