@@ -1,5 +1,8 @@
 import ImageIO
 import SwiftUI
+#if canImport(WidgetKit)
+import WidgetKit
+#endif
 #if canImport(UIKit)
 import UIKit
 #else
@@ -15,12 +18,15 @@ public struct JisiCatView: View {
     public var toy: Toy?
     public var animated: Bool
     public var reactionID: Date?
+    /// 静帧用较大的图（主屏幕小组件）；锁屏小组件、Live Activity 用默认的小图。
+    public var largeStill: Bool
 
-    public init(pose: CatPose, toy: Toy? = nil, animated: Bool = true, reactionID: Date? = nil) {
+    public init(pose: CatPose, toy: Toy? = nil, animated: Bool = true, reactionID: Date? = nil, largeStill: Bool = false) {
         self.pose = pose
         self.toy = toy
         self.animated = animated
         self.reactionID = reactionID
+        self.largeStill = largeStill
     }
 
     public var body: some View {
@@ -121,14 +127,28 @@ public struct JisiCatView: View {
 
     func head(eyes: CatLook.EyeState, side: CGFloat, small: Bool) -> some View {
         ZStack {
-            if let image = small ? JisiArt.smallFace : JisiArt.face {
-                image.resizable().scaledToFit()
+            if let image = !small ? JisiArt.face : largeStill ? JisiArt.mediumFace : JisiArt.smallFace {
+                fullColor(image.resizable()).scaledToFit()
             } else {
                 PlaceholderFace()
             }
             EyePatches(state: eyes)
         }
         .frame(width: side * 0.86, height: side * 0.86)
+    }
+
+    /// 系统给 Widget 着色（accented 模式）时，头像保持原色。
+    @ViewBuilder
+    func fullColor(_ image: Image) -> some View {
+        #if canImport(WidgetKit) && os(iOS)
+        if #available(iOS 18.0, *) {
+            image.widgetAccentedRenderingMode(.fullColor)
+        } else {
+            image
+        }
+        #else
+        image
+        #endif
     }
 
     func floating<V: View>(t: Double?, period: Double, side: CGFloat, @ViewBuilder _ content: () -> V) -> some View {
@@ -239,6 +259,9 @@ public enum JisiArt {
     /// 512px 原图放进圆形 / 长方形锁屏 Widget 会渲染失败，只剩灰色占位。
     public static let smallFace: Image? = load(maxPixel: smallFacePixels)
     static let smallFacePixels = 144
+
+    /// 主屏幕 / 待机小组件用。
+    public static let mediumFace: Image? = load(maxPixel: 320)
 
     static var faceURL: URL? { Bundle.module.url(forResource: "JisiFace", withExtension: "png") }
 

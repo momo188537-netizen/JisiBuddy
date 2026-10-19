@@ -29,11 +29,14 @@ struct JisiLockScreenWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: JisiConfig.widgetKind, provider: CatProvider()) { entry in
             LockScreenView(entry: entry)
-                .containerBackground(.clear, for: .widget)
+                .containerBackground(for: .widget) {
+                    LinearGradient(colors: [Color(red: 1, green: 0.94, blue: 0.84), Color(red: 1, green: 0.8, blue: 0.58)],
+                                   startPoint: .top, endPoint: .bottom)
+                }
         }
         .configurationDisplayName("鸡丝")
-        .description("鸡丝在锁屏上陪你。")
-        .supportedFamilies([.accessoryRectangular, .accessoryCircular])
+        .description("鸡丝在锁屏、主屏幕和待机里陪你。")
+        .supportedFamilies([.accessoryRectangular, .accessoryCircular, .systemSmall])
     }
 }
 
@@ -43,6 +46,17 @@ struct LockScreenView: View {
 
     var body: some View {
         switch family {
+        case .systemSmall:
+            // 主屏幕 / 待机（StandBy）：彩色。
+            VStack(spacing: 4) {
+                JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false, largeStill: true)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Text(entry.snapshot.line)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(Color(red: 0.35, green: 0.2, blue: 0.1))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
         case .accessoryCircular:
             ZStack {
                 AccessoryWidgetBackground()
