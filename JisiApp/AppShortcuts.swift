@@ -16,5 +16,11 @@ struct JisiShortcuts: AppShortcutsProvider {
             shortTitle: "一起下班",
             systemImageName: "house.fill"
         )
+        AppShortcut(
+            intent: StartMeetingIntent(),
+            phrases: ["\(.applicationName)我在开会", "告诉\(.applicationName)我在开会"],
+            shortTitle: "我在开会",
+            systemImageName: "bell.slash.fill"
+        )
     }
 }

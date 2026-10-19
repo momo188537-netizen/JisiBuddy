@@ -6,11 +6,13 @@ struct HomeView: View {
     @Environment(HomeModel.self) private var model
     @State private var showSettings = false
     @State private var showMemories = false
+    @State private var askMeeting = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
+                    if let until = model.meetingUntil { meetingBanner(until) }
                     if model.offerResume { resumeBanner }
                     if let gift = model.diary.pendingGift {
                         giftBanner(gift)
@@ -26,6 +28,23 @@ struct HomeView: View {
                     }
 
                     workButton
+
+                    if model.meetingUntil == nil {
+                        Button {
+                            askMeeting = true
+                        } label: {
+                            Label("我在开会", systemImage: "bell.slash")
+                        }
+                        .buttonStyle(.borderless)
+                        .font(.subheadline)
+                        .confirmationDialog("开多久？", isPresented: $askMeeting, titleVisibility: .visible) {
+                            ForEach(MeetingMode.choices, id: \.self) { m in
+                                Button("\(m) 分钟") { model.startMeeting(minutes: m) }
+                            }
+                        } message: {
+                            Text("鸡丝会安静睡觉，提醒先暂停，到时自动恢复。")
+                        }
+                    }
 
                     TodayView(today: model.diary.today.day == Diary.dayKey(Date(), calendar: .current) ? model.diary.today : DayCounts())
 
@@ -87,6 +106,25 @@ struct HomeView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private func meetingBanner(_ until: Date) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "bell.slash.fill").foregroundStyle(.indigo)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 4) {
+                    Text("开会中，还剩")
+                    Text(timerInterval: Date.now...max(until, Date.now), countsDown: true).monospacedDigit()
+                }
+                .font(.subheadline.weight(.semibold))
+                Text("鸡丝在安静睡觉，提醒先暂停。").font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            Button("提前结束", action: model.endMeeting)
+                .buttonStyle(.bordered)
+        }
+        .padding()
+        .background(Color.indigo.opacity(0.08), in: .rect(cornerRadius: 14))
     }
 
     /// 低频：只在有新纪念时出现一次，收起后不再出现。

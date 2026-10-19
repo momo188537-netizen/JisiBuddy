@@ -152,6 +152,13 @@ enum Lines {
     static let lounging = workMorning
     static let drowsy = afternoonSlump
 
+    /// 开会中
+    static let meeting = [
+        "你开会，我先睡会儿",
+        "嘘——在开会",
+        "安静陪你开会",
+    ]
+
     // MARK: 互动反应
 
     static let petted = [

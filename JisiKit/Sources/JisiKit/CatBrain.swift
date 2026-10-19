@@ -13,6 +13,8 @@ public enum CatBrain {
         public var toys: [Toy]
         /// 已得到的小窝物件（软垫只在这里体现）
         public var items: Set<NestItem>
+        /// 开会到什么时候：期间鸡丝安静睡觉
+        public var meetingUntil: Date?
         public var calendar: Calendar
 
         public init(
@@ -22,6 +24,7 @@ public enum CatBrain {
             recentEvents: [CatEvent] = [],
             toys: [Toy] = Toy.allCases,
             items: Set<NestItem> = [],
+            meetingUntil: Date? = nil,
             calendar: Calendar = .current
         ) {
             self.now = now
@@ -30,6 +33,7 @@ public enum CatBrain {
             self.recentEvents = recentEvents
             self.toys = toys
             self.items = items
+            self.meetingUntil = meetingUntil
             self.calendar = calendar
         }
     }
@@ -48,6 +52,7 @@ public enum CatBrain {
 
     public static func snapshot(_ input: Input) -> CatSnapshot {
         if let reaction = reaction(input) { return reaction }
+        if let meeting = meeting(input) { return meeting }
         if let event = eventReaction(input) { return event }
         let b = autonomous(at: input.now, input: input)
         return CatSnapshot(pose: b.pose, line: b.line, toy: b.toy, date: input.now)
@@ -69,6 +74,7 @@ public enum CatBrain {
             let expiry = i.date.addingTimeInterval(CatBrain.duration(of: i.kind))
             if expiry > start && expiry < end { dates.insert(expiry) }
         }
+        if let until = input.meetingUntil, until > start && until < end { dates.insert(until) }
         for e in input.recentEvents {
             let expiry = e.date.addingTimeInterval(eventDuration)
             if expiry > start && expiry < end { dates.insert(expiry) }
@@ -100,6 +106,15 @@ public enum CatBrain {
         case .cushion:
             return CatSnapshot(pose: .cushionNap, line: Lines.cushionNap.pick(seed), date: input.now)
         }
+    }
+
+    // MARK: - 开会
+
+    /// 开会期间鸡丝安静睡觉（摸摸、喂食仍会有反应）。
+    static func meeting(_ input: Input) -> CatSnapshot? {
+        guard let until = input.meetingUntil, input.now < until else { return nil }
+        let seed = mix(UInt64(bitPattern: Int64(until.timeIntervalSince1970.rounded())))
+        return CatSnapshot(pose: .sleeping, line: Lines.meeting.pick(seed), date: input.now)
     }
 
     // MARK: - 事件

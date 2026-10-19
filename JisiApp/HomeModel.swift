@@ -18,6 +18,7 @@ final class HomeModel {
     private(set) var diary = Diary()
     private(set) var light: SceneLight = .day
     private(set) var isRestDay = false
+    private(set) var meetingUntil: Date?
     var errorMessage: String?
 
     var schedule: Schedule {
@@ -67,6 +68,7 @@ final class HomeModel {
         diary = d
         light = SceneLight.at(now, schedule: store.schedule)
         isRestDay = !store.schedule.isWorkday(now, calendar: .current)
+        meetingUntil = store.meetingUntil
         isWorking = live.isWorking
         offerResume = live.shouldOfferResume(now: now)
     }
@@ -83,6 +85,20 @@ final class HomeModel {
         reactionID = Date()
         Task {
             await JisiActions.feed()
+            refresh()
+        }
+    }
+
+    func startMeeting(minutes: Int) {
+        Task {
+            await MeetingMode.start(minutes: minutes)
+            refresh()
+        }
+    }
+
+    func endMeeting() {
+        Task {
+            await MeetingMode.end()
             refresh()
         }
     }

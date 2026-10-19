@@ -48,12 +48,15 @@ public struct JisiActivityAttributes: ActivityAttributes {
         public var lastFedAt: Date?
         /// 「一起下班」的时间；有值时卡片显示下班样式、计时停住、不再显示按钮。
         public var endedAt: Date?
+        /// 开会到什么时候；卡片显示倒计时和「散会」
+        public var meetingUntil: Date?
 
-        public init(pose: CatPose, line: String, lastFedAt: Date?, endedAt: Date? = nil) {
+        public init(pose: CatPose, line: String, lastFedAt: Date?, endedAt: Date? = nil, meetingUntil: Date? = nil) {
             self.pose = pose
             self.line = line
             self.lastFedAt = lastFedAt
             self.endedAt = endedAt
+            self.meetingUntil = meetingUntil
         }
     }
 
@@ -190,7 +193,7 @@ public final class LiveActivityController {
 
     func state(now: Date) -> JisiActivityAttributes.ContentState {
         let s = store.snapshot(at: now)
-        return .init(pose: s.pose, line: s.line, lastFedAt: store.lastFedAt)
+        return .init(pose: s.pose, line: s.line, lastFedAt: store.lastFedAt, meetingUntil: store.meetingUntil)
     }
 
     func endedState(now: Date) -> JisiActivityAttributes.ContentState {
@@ -198,8 +201,9 @@ public final class LiveActivityController {
     }
 
     func content(now: Date, session: WorkSession) -> ActivityContent<JisiActivityAttributes.ContentState> {
-        // 到下班点后显示「该下班啦」样式。
-        ActivityContent(state: state(now: now), staleDate: session.expectedClockOut)
+        // 到下班点后显示「该下班啦」样式；开会时到散会点变旧，卡片显示「会开完啦」。
+        let stale = store.meetingUntil.map { min($0, session.expectedClockOut) } ?? session.expectedClockOut
+        return ActivityContent(state: state(now: now), staleDate: stale)
     }
 
     private func observe(_ activity: Activity<JisiActivityAttributes>) {

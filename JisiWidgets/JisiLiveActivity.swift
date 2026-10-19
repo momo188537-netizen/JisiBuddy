@@ -29,7 +29,7 @@ struct JisiLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     if context.state.endedAt == nil {
-                        ActivityButtons(isStale: context.isStale)
+                        ActivityButtons(inMeeting: inMeeting(context))
                     }
                 }
             } compactLeading: {
@@ -46,7 +46,7 @@ struct JisiLiveActivity: Widget {
     }
 
     func face(_ context: ActivityViewContext<JisiActivityAttributes>) -> some View {
-        JisiCatView(pose: context.state.pose, animated: false)
+        JisiCatView(pose: displayPose(context), animated: false)
     }
 }
 
@@ -59,8 +59,23 @@ func companionTimer(_ context: ActivityViewContext<JisiActivityAttributes>) -> T
     return Text(timerInterval: context.attributes.startedAt...Date.distantFuture, countsDown: false)
 }
 
+/// 开会中且还没到散会点（到点后内容变旧，卡片显示「会开完啦」）
+func inMeeting(_ context: ActivityViewContext<JisiActivityAttributes>) -> Bool {
+    context.state.meetingUntil != nil && context.state.endedAt == nil && !context.isStale
+}
+
+/// 会开完了但 App 还没来得及更新卡片
+func meetingJustEnded(_ context: ActivityViewContext<JisiActivityAttributes>) -> Bool {
+    context.state.meetingUntil != nil && context.state.endedAt == nil && context.isStale
+}
+
+func displayPose(_ context: ActivityViewContext<JisiActivityAttributes>) -> CatPose {
+    meetingJustEnded(context) ? .lounging : context.state.pose
+}
+
 func headline(_ context: ActivityViewContext<JisiActivityAttributes>) -> String {
     if context.state.endedAt != nil { return context.state.line }
+    if meetingJustEnded(context) { return "会开完啦，辛苦了" }
     return context.isStale ? "到点啦，一起下班吧" : context.state.line
 }
 
@@ -70,7 +85,7 @@ struct LockScreenActivityView: View {
     var body: some View {
         VStack(spacing: 10) {
             HStack(spacing: 12) {
-                JisiCatView(pose: context.state.pose, animated: false)
+                JisiCatView(pose: displayPose(context), animated: false)
                     .frame(width: 64, height: 64)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(headline(context))
@@ -82,7 +97,14 @@ struct LockScreenActivityView: View {
                     }
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    if let fed = context.state.lastFedAt {
+                    if inMeeting(context), let until = context.state.meetingUntil {
+                        HStack(spacing: 4) {
+                            Text("开会中，还剩")
+                            Text(timerInterval: until.addingTimeInterval(-6 * 3600)...until, countsDown: true).monospacedDigit()
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    } else if let fed = context.state.lastFedAt {
                         Text("上次喂小鱼干 \(fed, style: .time)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -91,7 +113,7 @@ struct LockScreenActivityView: View {
                 Spacer(minLength: 0)
             }
             if context.state.endedAt == nil {
-                ActivityButtons(isStale: context.isStale)
+                ActivityButtons(inMeeting: inMeeting(context))
             }
         }
         .padding()
@@ -100,10 +122,10 @@ struct LockScreenActivityView: View {
 
 /// 锁屏上不用解锁就能点（LiveActivityIntent 在 App 进程里后台执行）。
 struct ActivityButtons: View {
-    var isStale: Bool
+    var inMeeting: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             Button(intent: PetJisiIntent()) {
                 Label("摸摸", systemImage: "hand.raised.fill")
             }
@@ -112,8 +134,19 @@ struct ActivityButtons: View {
                 Label("喂食", systemImage: "fish.fill")
             }
             .buttonStyle(SolidButtonStyle(fill: .orange))
+            if inMeeting {
+                Button(intent: EndMeetingIntent()) {
+                    Label("散会", systemImage: "bell.fill")
+                }
+                .buttonStyle(SolidButtonStyle(fill: Color(red: 0.35, green: 0.4, blue: 0.6)))
+            } else {
+                Button(intent: StartMeetingIntent(minutes: 60)) {
+                    Label("开会", systemImage: "bell.slash.fill")
+                }
+                .buttonStyle(SolidButtonStyle(fill: Color(red: 0.35, green: 0.4, blue: 0.6)))
+            }
             Button(intent: ClockOutIntent()) {
-                Label("一起下班", systemImage: "house.fill")
+                Label("下班", systemImage: "house.fill")
             }
             .buttonStyle(SolidButtonStyle(fill: Color(red: 0.45, green: 0.26, blue: 0.13)))
         }

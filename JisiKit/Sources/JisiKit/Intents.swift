@@ -204,3 +204,65 @@ public struct JisiFocusFilter: SetFocusFilterIntent, LiveActivityIntent {
     }
 }
 #endif
+
+#if os(iOS)
+/// 开会模式：期间鸡丝安静睡觉、提醒暂停，到时自动恢复（提醒本来就是按时间单次排的，开会那段直接跳过）。
+@MainActor
+public enum MeetingMode {
+    public static let choices = [30, 60, 90]
+
+    public static func start(minutes: Int, now: Date = Date()) async {
+        SharedStore.shared.meetingUntil = now.addingTimeInterval(Double(minutes) * 60)
+        JisiLog.append("meeting", at: now)
+        await afterChange()
+    }
+
+    public static func end() async {
+        SharedStore.shared.meetingUntil = nil
+        await afterChange()
+    }
+
+    static func afterChange() async {
+        await Reminders.shared.reschedule()
+        if let session = SharedStore.shared.session, session.isOpen {
+            await ClockOutNotice.schedule(for: session)
+        }
+        await InteractionHandler.afterChange(now: Date())
+    }
+}
+
+/// 锁屏卡片 / 快捷指令：我在开会
+public struct StartMeetingIntent: LiveActivityIntent {
+    public static let title: LocalizedStringResource = "我在开会"
+    public static let description = IntentDescription("鸡丝安静睡觉，提醒暂停，到时自动恢复。")
+    public static let openAppWhenRun = false
+    public static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
+
+    @Parameter(title: "分钟", default: 60)
+    public var minutes: Int
+
+    public init() {}
+    public init(minutes: Int) { self.minutes = minutes }
+
+    @MainActor
+    public func perform() async throws -> some IntentResult {
+        await MeetingMode.start(minutes: max(5, minutes))
+        return .result()
+    }
+}
+
+/// 提前散会
+public struct EndMeetingIntent: LiveActivityIntent {
+    public static let title: LocalizedStringResource = "开完会了"
+    public static let openAppWhenRun = false
+    public static let authenticationPolicy: IntentAuthenticationPolicy = .alwaysAllowed
+
+    public init() {}
+
+    @MainActor
+    public func perform() async throws -> some IntentResult {
+        await MeetingMode.end()
+        return .result()
+    }
+}
+#endif

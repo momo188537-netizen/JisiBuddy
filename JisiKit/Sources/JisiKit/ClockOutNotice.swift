@@ -8,10 +8,12 @@ public enum ClockOutNotice {
 
     /// 该在什么时候提醒；nil 表示这次不提醒。
     /// - deliveredDay: 今天（yyyymmdd）是否已经提醒过
+    /// - meetingUntil: 下班点正好在开会，就等开完会再提醒
     public static func fireDate(session: WorkSession, schedule: Schedule, deliveredDay: Int?,
-                                now: Date, calendar: Calendar = .current) -> Date? {
+                                now: Date, meetingUntil: Date? = nil, calendar: Calendar = .current) -> Date? {
         guard session.isOpen else { return nil }
-        let fire = session.expectedClockOut
+        var fire = session.expectedClockOut
+        if let until = meetingUntil, fire >= now, fire < until { fire = until }
         guard fire > now, schedule.isWorkday(fire, calendar: calendar) else { return nil }
         if let deliveredDay, deliveredDay == Diary.dayKey(fire, calendar: calendar) { return nil }
         return fire
@@ -36,7 +38,8 @@ extension ClockOutNotice {
                                      now: now, calendar: .current)
         store.clockOutNoticeDeliveredDay = delivered
         store.clockOutNoticeAt = nil
-        guard let fire = fireDate(session: session, schedule: store.schedule, deliveredDay: delivered, now: now) else { return }
+        guard let fire = fireDate(session: session, schedule: store.schedule, deliveredDay: delivered, now: now,
+                                  meetingUntil: store.meetingUntil) else { return }
         switch await center.notificationSettings().authorizationStatus {
         case .denied: return
         case .notDetermined:

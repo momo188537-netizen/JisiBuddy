@@ -27,7 +27,7 @@ public final class SharedStore: @unchecked Sendable {
     }
 
     enum Key: String {
-        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary, preferences, clockOutNoticeAt, clockOutNoticeDeliveredDay
+        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary, preferences, clockOutNoticeAt, clockOutNoticeDeliveredDay, meetingUntil
     }
 
     func get<T: Decodable>(_ key: Key, as type: T.Type = T.self) -> T? {
@@ -85,6 +85,12 @@ public final class SharedStore: @unchecked Sendable {
         set { set(newValue, for: .session) }
     }
 
+    /// 开会模式到什么时候结束（过期的当作没在开会）
+    public var meetingUntil: Date? {
+        get { get(.meetingUntil, as: Date.self).flatMap { $0 > Date() ? $0 : nil } }
+        set { set(newValue, for: .meetingUntil) }
+    }
+
     /// 下班通知排在什么时候（没排就是 nil）
     public var clockOutNoticeAt: Date? {
         get { get(.clockOutNoticeAt) }
@@ -117,6 +123,7 @@ public final class SharedStore: @unchecked Sendable {
             recentEvents: recentEvents,
             toys: toys,
             items: diary.ownedItems,
+            meetingUntil: get(.meetingUntil, as: Date.self),
             calendar: calendar
         )
     }

@@ -183,3 +183,64 @@ struct ClockOutNoticeTests {
         #expect(ClockOutNotice.deliveredDay(scheduledAt: date(20, 18), previous: nil, now: date(20, 17), calendar: calendar) == nil)
     }
 }
+
+struct MeetingTests {
+    let calendar: Calendar = {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        return c
+    }()
+    func date(_ day: Int, _ h: Int, _ m: Int = 0) -> Date {
+        calendar.date(from: DateComponents(year: 2026, month: 10, day: day, hour: h, minute: m))!
+    }
+
+    @Test func catSleepsQuietlyDuringMeeting() {
+        let now = date(20, 10)
+        var i = CatBrain.Input(now: now, meetingUntil: now.addingTimeInterval(3600), calendar: calendar)
+        let s = CatBrain.snapshot(i)
+        #expect(s.pose == .sleeping)
+        #expect(Lines.meeting.contains(s.line))
+        // 摸摸仍有反应
+        i.lastInteraction = Interaction(kind: .pet, date: now)
+        #expect(CatBrain.snapshot(i).pose == .petted)
+        // 散会后恢复
+        i.lastInteraction = nil
+        i.now = now.addingTimeInterval(3601)
+        #expect(CatBrain.snapshot(i).pose != .sleeping || !Lines.meeting.contains(CatBrain.snapshot(i).line))
+    }
+
+    @Test func timelineHasMeetingEnd() {
+        let now = date(20, 10, 7)
+        let until = now.addingTimeInterval(30 * 60 + 13)
+        let entries = CatBrain.timeline(CatBrain.Input(now: now, meetingUntil: until, calendar: calendar))
+        #expect(entries.contains { $0.date == until })
+    }
+
+    @Test func remindersSkipMeetingWindow() {
+        let settings = ReminderSettings(mealsEnabled: true, breaksEnabled: true, breakInterval: 60)
+        let now = date(20, 11, 50)
+        let all = ReminderPlan.upcoming(settings: settings, schedule: .default, now: now, calendar: calendar)
+        #expect(all.first?.id == "lunch.20261020")
+        let quiet = ReminderPlan.upcoming(settings: settings, schedule: .default, now: now,
+                                          meetingUntil: date(20, 13), calendar: calendar)
+        #expect(!quiet.contains { $0.date < date(20, 13) })
+        // 开完会后的照常
+        #expect(quiet.contains { $0.date >= date(20, 13) && $0.date < date(20, 19) })
+    }
+
+    @Test func remindersStayUnderLimitAndSkipRestDayBreaks() {
+        let settings = ReminderSettings(mealsEnabled: true, breaksEnabled: true, breakInterval: 30)
+        let items = ReminderPlan.upcoming(settings: settings, schedule: .default, now: date(20, 0), calendar: calendar)
+        #expect(items.count <= ReminderPlan.maxPending)
+        // 周六（24 日）没有休息提醒
+        #expect(!items.contains { $0.id.hasPrefix("break.20261024") })
+        #expect(zip(items, items.dropFirst()).allSatisfy { $0.date <= $1.date })
+    }
+
+    @Test func clockOutNoticeWaitsForMeeting() {
+        let s = WorkSession(startedAt: date(20, 9), expectedClockOut: date(20, 18, 30))
+        let fire = ClockOutNotice.fireDate(session: s, schedule: .default, deliveredDay: nil, now: date(20, 18),
+                                           meetingUntil: date(20, 19), calendar: calendar)
+        #expect(fire == date(20, 19))
+    }
+}
