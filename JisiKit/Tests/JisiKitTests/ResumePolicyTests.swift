@@ -136,3 +136,9 @@ struct ArtTests {
         #expect(max(cg.width, cg.height) <= JisiArt.smallFacePixels)
     }
 }
+
+extension ArtTests {
+    @Test func monoFaceIsBundled() {
+        #expect(JisiArt.monoFace != nil)
+    }
+}

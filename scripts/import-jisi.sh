@@ -6,3 +6,6 @@ set -e
 OUT="$(dirname "$0")/../JisiKit/Sources/JisiKit/Resources/JisiFace.png"
 sips -s format png -f horizontal -Z 512 "$1" --out "$OUT" >/dev/null
 echo "已导入到 $OUT"
+MONO="$(dirname "$0")/../JisiKit/Sources/JisiKit/Resources/JisiFaceMono.png"
+swift "$(dirname "$0")/mono-face.swift" "$OUT" "$MONO" 144
+echo "已生成锁屏单色头像 $MONO"

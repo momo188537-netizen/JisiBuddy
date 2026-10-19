@@ -20,13 +20,16 @@ public struct JisiCatView: View {
     public var reactionID: Date?
     /// 静帧用较大的图（主屏幕小组件）；锁屏小组件、Live Activity 用默认的小图。
     public var largeStill: Bool
+    /// 锁屏小组件的单色（vibrant）模式：用高对比度灰度头像，五官更清楚。
+    public var monochrome: Bool
 
-    public init(pose: CatPose, toy: Toy? = nil, animated: Bool = true, reactionID: Date? = nil, largeStill: Bool = false) {
+    public init(pose: CatPose, toy: Toy? = nil, animated: Bool = true, reactionID: Date? = nil, largeStill: Bool = false, monochrome: Bool = false) {
         self.pose = pose
         self.toy = toy
         self.animated = animated
         self.reactionID = reactionID
         self.largeStill = largeStill
+        self.monochrome = monochrome
     }
 
     public var body: some View {
@@ -127,7 +130,7 @@ public struct JisiCatView: View {
 
     func head(eyes: CatLook.EyeState, side: CGFloat, small: Bool) -> some View {
         ZStack {
-            if let image = !small ? JisiArt.face : largeStill ? JisiArt.mediumFace : JisiArt.smallFace {
+            if let image = artwork(small: small) {
                 fullColor(image.resizable()).scaledToFit()
             } else {
                 PlaceholderFace()
@@ -135,6 +138,12 @@ public struct JisiCatView: View {
             EyePatches(state: eyes)
         }
         .frame(width: side * 0.86, height: side * 0.86)
+    }
+
+    func artwork(small: Bool) -> Image? {
+        if !small { return JisiArt.face }
+        if monochrome { return JisiArt.monoFace ?? JisiArt.smallFace }
+        return largeStill ? JisiArt.mediumFace : JisiArt.smallFace
     }
 
     /// 系统给 Widget 着色（accented 模式）时，头像保持原色。
@@ -259,6 +268,16 @@ public enum JisiArt {
     /// 512px 原图放进圆形 / 长方形锁屏 Widget 会渲染失败，只剩灰色占位。
     public static let smallFace: Image? = load(maxPixel: smallFacePixels)
     static let smallFacePixels = 144
+
+    /// 锁屏单色模式用：scripts/mono-face.swift 生成的 144px 高对比度灰度图。
+    public static let monoFace: Image? = {
+        guard let url = Bundle.module.url(forResource: "JisiFaceMono", withExtension: "png") else { return nil }
+        #if canImport(UIKit)
+        return UIImage(contentsOfFile: url.path).map { Image(uiImage: $0) }
+        #else
+        return NSImage(contentsOf: url).map { Image(nsImage: $0) }
+        #endif
+    }()
 
     /// 主屏幕 / 待机小组件用。
     public static let mediumFace: Image? = load(maxPixel: 320)

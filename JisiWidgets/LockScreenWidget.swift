@@ -42,6 +42,7 @@ struct JisiLockScreenWidget: Widget {
 
 struct LockScreenView: View {
     @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetRenderingMode) private var renderingMode
     var entry: CatEntry
 
     var body: some View {
@@ -60,12 +61,14 @@ struct LockScreenView: View {
         case .accessoryCircular:
             ZStack {
                 AccessoryWidgetBackground()
-                JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false)
+                JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false,
+                            monochrome: renderingMode == .vibrant)
                     .padding(4)
             }
         default:
             HStack(spacing: 6) {
-                JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false)
+                JisiCatView(pose: entry.snapshot.pose, toy: entry.snapshot.toy, animated: false,
+                            monochrome: renderingMode == .vibrant)
                     .frame(width: 44, height: 44)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("鸡丝 · \(entry.snapshot.pose.displayName)")
