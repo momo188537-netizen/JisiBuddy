@@ -200,6 +200,21 @@ enum Lines {
         "我也吃了小鱼干",
     ]
 
+    static let moodEasy = [
+        "轻松就好，晚上好好玩",
+        "那今晚多陪我玩会儿",
+    ]
+
+    static let moodOkay = [
+        "还行就好，回家歇歇",
+        "辛苦啦，吃点好的",
+    ]
+
+    static let moodTired = [
+        "辛苦了，今晚早点睡",
+        "累了就靠着我躺会儿",
+    ]
+
     static let tookBreak = [
         "伸——个懒腰",
         "休息一下真好",

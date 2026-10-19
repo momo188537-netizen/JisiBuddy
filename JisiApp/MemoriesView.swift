@@ -19,6 +19,13 @@ struct MemoriesView: View {
                     Text("只记发生过的事，忘了打开也没关系。")
                 }
 
+                if !d.moods.isEmpty {
+                    Section("下班心情") {
+                        moodRow("这周", Self.counts(d, .weekOfYear))
+                        moodRow("这个月", Self.counts(d, .month))
+                    }
+                }
+
                 Section("小窝里的东西") {
                     if d.items.isEmpty {
                         Text("还没有。一起上班、下班、吃饭时，鸡丝会慢慢找到。")
@@ -49,6 +56,18 @@ struct MemoriesView: View {
             .navigationTitle("纪念册")
             .toolbar { Button("完成") { dismiss() } }
         }
+    }
+
+    private func moodRow(_ title: String, _ counts: [ClockOutMood: Int]) -> some View {
+        LabeledContent(title) {
+            Text(ClockOutMood.allCases.map { "\($0.emoji) \($0.label) \(counts[$0, default: 0]) 次" }.joined(separator: "  "))
+                .font(.footnote)
+        }
+    }
+
+    static func counts(_ d: Diary, _ unit: Calendar.Component, now: Date = Date(), calendar: Calendar = .current) -> [ClockOutMood: Int] {
+        guard let interval = calendar.dateInterval(of: unit, for: now) else { return [:] }
+        return d.moodCounts(from: interval.start, to: interval.end)
     }
 
     @ViewBuilder

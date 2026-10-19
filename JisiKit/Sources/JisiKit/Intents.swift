@@ -116,6 +116,8 @@ public enum JisiActions {
     public static func tookBreak() async { await InteractionHandler.handle(.tookBreak) }
     /// 在小窝里点了毛线球 / 纸箱 / 软垫
     public static func play(_ item: NestItem) async { await InteractionHandler.handle(item.interaction) }
+    /// 下班时选了心情
+    public static func mood(_ mood: ClockOutMood) async { await InteractionHandler.handle(mood.event) }
 }
 
 #if os(iOS)

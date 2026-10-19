@@ -222,6 +222,36 @@ public enum CatEventKind: String, Codable, Hashable, Sendable {
     case ateMeal
     /// 休息提醒里点了「休息了」
     case tookBreak
+    /// 下班时回答「今天累不累」
+    case moodEasy, moodOkay, moodTired
+}
+
+/// 下班时的心情（可跳过，不追问）。只记录用户自己选的，不做推断。
+public enum ClockOutMood: String, Codable, CaseIterable, Hashable, Sendable, Identifiable {
+    case easy, okay, tired
+
+    public var id: String { rawValue }
+    public var emoji: String {
+        switch self {
+        case .easy: "😌"
+        case .okay: "🙂"
+        case .tired: "😮‍💨"
+        }
+    }
+    public var label: String {
+        switch self {
+        case .easy: "轻松"
+        case .okay: "还行"
+        case .tired: "好累"
+        }
+    }
+    public var event: CatEventKind {
+        switch self {
+        case .easy: .moodEasy
+        case .okay: .moodOkay
+        case .tired: .moodTired
+        }
+    }
 }
 
 public struct CatEvent: Codable, Hashable, Sendable {

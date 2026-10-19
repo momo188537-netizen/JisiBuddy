@@ -47,6 +47,15 @@ struct SettingsView: View {
                 } footer: {
                     Text("提醒里可以直接点「吃了」「休息了」，鸡丝会知道。不点也没关系。")
                 }
+                Section {
+                    Toggle("下班时问一句「今天累不累」", isOn: Binding(
+                        get: { model.preferences.askMoodAtClockOut },
+                        set: { model.preferences.askMoodAtClockOut = $0 }
+                    ))
+                } footer: {
+                    Text("在 App 里点「一起下班」后出现，可以跳过。纪念册里只记你选了什么，不做评价。")
+                }
+
                 BackupSection()
 
                 #if DEBUG

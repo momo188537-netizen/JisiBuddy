@@ -133,6 +133,9 @@ public enum CatBrain {
         case .clockOut: Lines.clockOut.pick(seed)
         case .ateMeal: Lines.ateMeal.pick(seed)
         case .tookBreak: Lines.tookBreak.pick(seed)
+        case .moodEasy: Lines.moodEasy.pick(seed)
+        case .moodOkay: Lines.moodOkay.pick(seed)
+        case .moodTired: Lines.moodTired.pick(seed)
         }
         // 用户吃饭了，鸡丝也吃小鱼干（PRD 第 4 节）。
         let pose: CatPose = e.kind == .ateMeal ? .fed : .lounging

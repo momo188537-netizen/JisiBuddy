@@ -20,10 +20,45 @@ public struct Diary: Codable, Hashable, Sendable {
     /// 首页已经展示过的纪念
     public var seenMemoryIDs: Set<String> = []
     public var today = DayCounts()
+    /// 下班时选的心情（只存最近一年）
+    public var moods: [MoodEntry] = []
 
     public init() {}
 
+    public struct MoodEntry: Codable, Hashable, Sendable {
+        public var date: Date
+        public var mood: ClockOutMood
+    }
+
+    /// 某段时间里各种心情各选了几次（纪念册里只展示这些事实）
+    public func moodCounts(from start: Date, to end: Date) -> [ClockOutMood: Int] {
+        moods.filter { $0.date >= start && $0.date < end }.reduce(into: [:]) { $0[$1.mood, default: 0] += 1 }
+    }
+
     public var ownedItems: Set<NestItem> { Set(items.keys) }
+
+    // 新版本加字段时，老数据里没有的字段用默认值，避免整本日记读不出来。
+    enum CodingKeys: String, CodingKey {
+        case firstDay, activeDays, firstClockOut, clockOutCount, mealCount, petCount, feedCount
+        case items, pendingGift, memories, seenMemoryIDs, today, moods
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        firstDay = try c.decodeIfPresent(Date.self, forKey: .firstDay)
+        activeDays = try c.decodeIfPresent(Set<Int>.self, forKey: .activeDays) ?? []
+        firstClockOut = try c.decodeIfPresent(Date.self, forKey: .firstClockOut)
+        clockOutCount = try c.decodeIfPresent(Int.self, forKey: .clockOutCount) ?? 0
+        mealCount = try c.decodeIfPresent(Int.self, forKey: .mealCount) ?? 0
+        petCount = try c.decodeIfPresent(Int.self, forKey: .petCount) ?? 0
+        feedCount = try c.decodeIfPresent(Int.self, forKey: .feedCount) ?? 0
+        items = try c.decodeIfPresent([NestItem: Date].self, forKey: .items) ?? [:]
+        pendingGift = try c.decodeIfPresent(NestItem.self, forKey: .pendingGift)
+        memories = try c.decodeIfPresent([Memory].self, forKey: .memories) ?? []
+        seenMemoryIDs = try c.decodeIfPresent(Set<String>.self, forKey: .seenMemoryIDs) ?? []
+        today = try c.decodeIfPresent(DayCounts.self, forKey: .today) ?? DayCounts()
+        moods = try c.decodeIfPresent([MoodEntry].self, forKey: .moods) ?? []
+    }
 
     /// 记一笔。返回这次新增的纪念（通常为空）。
     @discardableResult
@@ -67,6 +102,11 @@ public struct Diary: Codable, Hashable, Sendable {
             today.breaks += 1
         case .played:
             break
+        case .mood(let m):
+            moods.append(MoodEntry(date: date, mood: m))
+            if let cutoff = calendar.date(byAdding: .day, value: -366, to: date) {
+                moods.removeAll { $0.date < cutoff }
+            }
         }
 
         if let item = NestGifts.earned(after: kind, owned: ownedItems, activeDays: activeDays.count) {
@@ -123,10 +163,12 @@ public struct Diary: Codable, Hashable, Sendable {
 
     // MARK: -
 
-    public enum Kind: String, Codable, Hashable, Sendable {
+    public enum Kind: Hashable, Sendable {
         case pet, feed, clockIn, clockOut, ateMeal, tookBreak
         /// 在小窝里玩了物件
         case played
+        /// 下班时选的心情
+        case mood(ClockOutMood)
     }
 
     static let mealMilestones: Set<Int> = [1, 10, 30, 50, 100, 200, 365]

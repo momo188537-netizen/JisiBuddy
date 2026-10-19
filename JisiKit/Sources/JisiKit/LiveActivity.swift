@@ -162,6 +162,11 @@ public final class LiveActivityController {
             JisiLog.append(CatEventKind.clockOut.rawValue, at: now)
         }
         ClockOutNotice.cancel(store: store, now: now)
+        // 下班了，会也就散了（不然鸡丝还在「安静陪你开会」）
+        if store.meetingUntil != nil {
+            store.meetingUntil = nil
+            await Reminders.shared.reschedule(now: now)
+        }
         let final = ActivityContent(state: endedState(now: now), staleDate: nil)
         for activity in Activity<JisiActivityAttributes>.activities {
             await activity.end(final, dismissalPolicy: .after(now.addingTimeInterval(60)))

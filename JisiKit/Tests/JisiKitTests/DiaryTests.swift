@@ -128,3 +128,49 @@ struct DiaryTests {
         #expect(try JSONDecoder().decode(Diary.self, from: data) == d)
     }
 }
+
+struct MoodTests {
+    let calendar: Calendar = {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        return c
+    }()
+    func date(_ day: Int, _ h: Int = 18) -> Date {
+        calendar.date(from: DateComponents(year: 2026, month: 10, day: day, hour: h))!
+    }
+
+    @Test func recordsMoodsAsFacts() {
+        var d = Diary()
+        d.record(.mood(.easy), at: date(19), calendar: calendar)
+        d.record(.mood(.tired), at: date(20), calendar: calendar)
+        d.record(.mood(.easy), at: date(21), calendar: calendar)
+        let c = d.moodCounts(from: date(19, 0), to: date(22, 0))
+        #expect(c[.easy] == 2 && c[.tired] == 1 && c[.okay] == nil)
+        // 不产生任何纪念
+        #expect(!d.memories.contains { $0.id.contains("mood") })
+    }
+
+    @Test func catAnswersMood() {
+        let now = date(20)
+        let s = CatBrain.snapshot(CatBrain.Input(now: now, recentEvents: [CatEvent(kind: .moodTired, date: now)], calendar: calendar))
+        #expect(Lines.moodTired.contains(s.line))
+    }
+
+    @Test func moodFromLog() {
+        #expect(Diary.Kind(logKind: "moodOkay") == .mood(.okay))
+    }
+
+    /// 老版本存的日记没有 moods 等字段，也要能读出来，不能清空。
+    @Test func decodesOldDiaryWithoutNewFields() throws {
+        let old = #"{"petCount":3,"activeDays":[20261020],"items":["yarn",814126619.07],"memories":[],"seenMemoryIDs":[],"today":{"day":20261020,"pets":3,"feeds":0,"meals":0,"breaks":0},"mealCount":0,"clockOutCount":0,"feedCount":0}"#
+        let d = try JSONDecoder().decode(Diary.self, from: Data(old.utf8))
+        #expect(d.petCount == 3)
+        #expect(d.ownedItems == [.yarn])
+        #expect(d.moods.isEmpty)
+    }
+
+    @Test func preferencesDefaultWhenMissing() throws {
+        let p = try JSONDecoder().decode(Preferences.self, from: Data("{}".utf8))
+        #expect(p.askMoodAtClockOut)
+    }
+}

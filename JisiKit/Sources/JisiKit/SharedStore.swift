@@ -149,9 +149,17 @@ public final class SharedStore: @unchecked Sendable {
     }
 }
 
-/// 其他开关（新功能的设置都放这里，备份时一起导出）。
+/// 其他开关（新功能的设置都放这里，备份时一起导出）。缺的字段用默认值，老数据不会读坏。
 public struct Preferences: Codable, Hashable, Sendable {
+    /// 点「一起下班」后问一句「今天累不累」
+    public var askMoodAtClockOut = true
+
     public init() {}
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        askMoodAtClockOut = try c.decodeIfPresent(Bool.self, forKey: .askMoodAtClockOut) ?? true
+    }
 }
 
 public struct ReminderSettings: Codable, Hashable, Sendable {
@@ -174,6 +182,9 @@ extension Diary.Kind {
         case .clockOut: .clockOut
         case .ateMeal: .ateMeal
         case .tookBreak: .tookBreak
+        case .moodEasy: .mood(.easy)
+        case .moodOkay: .mood(.okay)
+        case .moodTired: .mood(.tired)
         }
     }
 

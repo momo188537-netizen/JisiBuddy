@@ -19,6 +19,13 @@ final class HomeModel {
     private(set) var light: SceneLight = .day
     private(set) var isRestDay = false
     private(set) var meetingUntil: Date?
+    /// 刚在 App 里点了「一起下班」，问一句今天累不累（可跳过）
+    private(set) var askMood = false
+
+    var preferences: Preferences {
+        get { store.preferences }
+        set { store.preferences = newValue }
+    }
     var errorMessage: String?
 
     var schedule: Schedule {
@@ -176,6 +183,17 @@ final class HomeModel {
         Task {
             await live.endWork()
             isBusy = false
+            askMood = store.preferences.askMoodAtClockOut
+            refresh()
+        }
+    }
+
+    func answerMood(_ mood: ClockOutMood?) {
+        askMood = false
+        guard let mood else { return }
+        reactionID = Date()
+        Task {
+            await JisiActions.mood(mood)
             refresh()
         }
     }

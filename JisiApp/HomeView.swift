@@ -14,7 +14,9 @@ struct HomeView: View {
                 VStack(spacing: 24) {
                     if let until = model.meetingUntil { meetingBanner(until) }
                     if model.offerResume { resumeBanner }
-                    if let gift = model.diary.pendingGift {
+                    if model.askMood {
+                        moodCard
+                    } else if let gift = model.diary.pendingGift {
                         giftBanner(gift)
                     } else if let memory = model.diary.unseenMemory {
                         memoryCard(memory)
@@ -106,6 +108,35 @@ struct HomeView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    /// 下班时问一句。可以跳过，不选也没关系，不追问。
+    private var moodCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("今天累不累？").font(.subheadline.weight(.semibold))
+            HStack(spacing: 10) {
+                ForEach(ClockOutMood.allCases) { m in
+                    Button {
+                        model.answerMood(m)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text(m.emoji).font(.title)
+                            Text(m.label).font(.caption)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+            HStack {
+                Spacer()
+                Button("跳过") { model.answerMood(nil) }
+                    .font(.footnote)
+                    .buttonStyle(.borderless)
+            }
+        }
+        .padding()
+        .background(Color.orange.opacity(0.08), in: .rect(cornerRadius: 14))
     }
 
     private func meetingBanner(_ until: Date) -> some View {
