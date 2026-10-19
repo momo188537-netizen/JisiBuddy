@@ -62,10 +62,64 @@ struct CatBrainTests {
         }
     }
 
-    @Test func workHoursAreLoungingOrPlaying() {
-        let s = CatBrain.snapshot(input(date(10, 30)))
-        #expect([.lounging, .playing].contains(s.pose))
-        if s.pose == .playing { #expect(s.toy != nil) }
+    @Test func workHoursAreAwake() {
+        for minute in stride(from: 0, to: 120, by: 15) {
+            let s = CatBrain.snapshot(input(date(9, 30).addingTimeInterval(Double(minute) * 60)))
+            #expect([.lounging, .playing, .working, .stretching, .batting, .inBox].contains(s.pose))
+            if [.playing, .working, .batting, .inBox].contains(s.pose) { #expect(s.toy != nil) }
+        }
+    }
+
+    @Test func periodsFollowSchedule() {
+        let s = Schedule.default
+        func p(_ h: Int, _ m: Int = 0, day: Int = 20) -> CatBrain.Period { CatBrain.period(at: date(h, m, day: day), schedule: s, calendar: calendar) }
+        #expect(p(8) == .morning)
+        #expect(p(10) == .workMorning)
+        #expect(p(12) == .mealtime)
+        #expect(p(13, 30) == .afternoonSlump)
+        #expect(p(16) == .workAfternoon)
+        #expect(p(18, 30) == .mealtime)
+        #expect(p(20) == .evening)
+        #expect(p(23) == .preBed)
+        #expect(p(2) == .night)
+        #expect(p(10, day: 24) == .weekend)
+    }
+
+    /// 同一天里最近几句台词不重样。
+    @Test func linesDoNotRepeatTooSoon() {
+        let start = date(9, 30)
+        let lines = (0..<12).map { CatBrain.snapshot(input(start.addingTimeInterval(Double($0) * 900 + 60))).line }
+        for i in lines.indices.dropFirst() {
+            let window = lines[max(0, i - CatBrain.recentLineMemory)..<i]
+            #expect(!window.contains(lines[i]), "\(lines[i]) repeated")
+        }
+    }
+
+    /// 没有的玩具不会出现：没毛线球就不拍毛线球，没软垫就不在软垫上睡。
+    @Test func onlyUsesOwnedItems() {
+        var i = input(date(10, 0))
+        i.toys = Toy.deskProps
+        i.items = []
+        for b in 0..<96 {
+            i.now = calendar.startOfDay(for: date(0)).addingTimeInterval(Double(b) * 900 + 60)
+            let s = CatBrain.snapshot(i)
+            #expect(![.batting, .inBox, .cushionNap].contains(s.pose))
+        }
+        i.items = [.cushion]
+        i.now = date(3, 0)
+        #expect(CatBrain.snapshot(i).pose == .cushionNap)
+    }
+
+    @Test func itemInteractionsShowItemPoses() {
+        let now = date(10, 0)
+        for item in NestItem.allCases {
+            let s = CatBrain.snapshot(input(now, interaction: Interaction(kind: item.interaction, date: now.addingTimeInterval(-60))))
+            #expect(s.pose == item.pose)
+        }
+        // 物件互动持续得比摸摸久
+        let later = now.addingTimeInterval(CatBrain.reactionDuration + 30)
+        #expect(CatBrain.snapshot(input(later, interaction: Interaction(kind: .box, date: now))).pose == .inBox)
+        #expect(CatBrain.snapshot(input(later, interaction: Interaction(kind: .pet, date: now))).pose != .petted)
     }
 
     @Test func interactionBeatsEverything() {

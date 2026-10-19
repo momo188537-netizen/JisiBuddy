@@ -11,6 +11,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     if model.offerResume { resumeBanner }
+                    if let gift = model.diary.pendingGift { giftBanner(gift) }
 
                     nest
 
@@ -61,28 +62,41 @@ struct HomeView: View {
                 .contentTransition(.opacity)
                 .animation(.default, value: model.snapshot.line)
 
-            ZStack(alignment: .bottom) {
-                Ellipse()
-                    .fill(Color.orange.opacity(0.18))
-                    .frame(height: 60)
-                    .offset(y: 10)
-                JisiCatView(
-                    pose: model.snapshot.pose,
-                    toy: model.snapshot.toy,
-                    animated: true,
-                    reactionID: model.reactionID
-                )
-                .frame(width: 240, height: 240)
-                .onTapGesture(perform: model.pet)
-            }
-            .padding(.top, 8)
+            NestScene(
+                snapshot: model.snapshot,
+                owned: model.diary.ownedItems,
+                light: model.light,
+                reactionID: model.reactionID,
+                onPet: model.pet,
+                onItem: model.play
+            )
+            .frame(height: 340)
+            .animation(.spring(duration: 0.4), value: model.snapshot.pose)
 
             Text(model.snapshot.pose.displayName)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+    }
+
+    private func giftBanner(_ item: NestItem) -> some View {
+        HStack(spacing: 12) {
+            JisiArt.prop("PropGift").frame(width: 40, height: 40)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("小窝里多了一个\(item.displayName)")
+                    .font(.subheadline.weight(.semibold))
+                if let story = model.diary.memories.first(where: { $0.id == "item.\(item.rawValue)" })?.detail {
+                    Text(story).font(.caption).foregroundStyle(.secondary)
+                }
+                Text("点它，鸡丝就会去玩。").font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+            Button("好", action: model.dismissGift)
+                .buttonStyle(.borderedProminent)
+        }
+        .padding()
+        .background(Color.orange.opacity(0.12), in: .rect(cornerRadius: 14))
     }
 
     private var resumeBanner: some View {

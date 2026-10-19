@@ -47,6 +47,7 @@ struct SettingsView: View {
                     Button("1 分钟后发一条测试饭点提醒") {
                         Task { await Reminders.shared.sendTestMeal() }
                     }
+                    Button("得到全部小窝物件") { model.debugUnlockAllItems() }
                 }
                 #endif
             }

@@ -80,9 +80,15 @@ public struct JisiCatView: View {
             guard let t, look.breatheAmplitude > 0 else { return 1 }
             return 1 + look.breatheAmplitude * CGFloat(sin(2 * .pi * t / look.breathePeriod))
         }()
+        let stretch: CGFloat = {
+            guard look.stretchAmplitude > 0 else { return 1 }
+            guard let t else { return 1 + look.stretchAmplitude * 0.8 }
+            // 慢慢拉长再缩回
+            return 1 + look.stretchAmplitude * CGFloat(max(0, sin(2 * .pi * t / 3)))
+        }()
         let tilt: Double = {
             guard let t else { return look.restingTilt }
-            if look.tiltAmplitude > 0 { return look.tiltAmplitude * sin(2 * .pi * t / 2.6) }
+            if look.tiltAmplitude > 0 { return look.restingTilt + look.tiltAmplitude * sin(2 * .pi * t / look.tiltPeriod) }
             // 困了：慢慢点头
             if look.droop > 0 { return look.restingTilt + 3 * sin(2 * .pi * t / 6) }
             return look.restingTilt
@@ -92,23 +98,44 @@ public struct JisiCatView: View {
             // 大约每 4.7 秒眨一次，每次 0.15 秒
             return t.truncatingRemainder(dividingBy: 4.7) < 0.15 ? .closed : .open
         }()
+        let laptopInFront = toy == .laptop && (pose == .working || pose == .drowsy || pose == .sleeping)
 
         ZStack {
+            if look.onCushion {
+                Cushion()
+                    .frame(width: side * 0.98, height: side * 0.3)
+                    .position(x: side * 0.5, y: side * 0.86)
+            }
+
             head(eyes: eyes, side: side, small: t == nil)
+                .scaleEffect(look.headScale, anchor: .bottom)
+                .scaleEffect(x: 1, y: stretch, anchor: .bottom)
                 .scaleEffect(breathe, anchor: .bottom)
                 .rotationEffect(.degrees(tilt), anchor: .bottom)
                 .offset(y: look.droop * side)
 
-            if look.showToy {
-                Image(systemName: (toy ?? .yarn).symbolName)
-                    .font(.system(size: side * 0.22, weight: .semibold))
-                    .foregroundStyle(.tint)
-                    .position(x: side * 0.86, y: side * 0.84)
+            if look.inBox {
+                JisiArt.prop(Toy.box.assetName, small: t == nil)
+                    .frame(width: side * 0.66, height: side * 0.66)
+                    .position(x: side * 0.5, y: side * 0.86)
+            } else if look.batting {
+                let roll = t.map { sin(2 * .pi * $0 / look.tiltPeriod) } ?? 0.6
+                JisiArt.prop(Toy.yarn.assetName, small: t == nil)
+                    .frame(width: side * 0.3, height: side * 0.3)
+                    .rotationEffect(.degrees(roll * 40))
+                    .position(x: side * (0.78 + 0.08 * roll), y: side * 0.84)
+            } else if laptopInFront {
+                JisiArt.prop(Toy.laptop.assetName, small: t == nil)
+                    .frame(width: side * 0.6, height: side * 0.6)
+                    .position(x: side * 0.5, y: side * 0.86)
+            } else if look.showToy, let toy {
+                JisiArt.prop(toy.assetName, small: t == nil)
+                    .frame(width: side * 0.3, height: side * 0.3)
+                    .position(x: side * 0.84, y: side * 0.82)
             }
             if look.showFish {
-                Image(systemName: "fish.fill")
-                    .font(.system(size: side * 0.2))
-                    .foregroundStyle(.orange)
+                JisiArt.prop("PropFish", small: t == nil)
+                    .frame(width: side * 0.26, height: side * 0.26)
                     .rotationEffect(.degrees(-20))
                     .position(x: side * 0.5, y: side * 0.88)
             }
@@ -247,6 +274,30 @@ struct PlaceholderFace: View {
     }
 }
 
+/// 软垫：SwiftUI 画的，暖粉色、有两颗纽扣。
+struct Cushion: View {
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            ZStack {
+                Capsule()
+                    .fill(LinearGradient(colors: [Color(red: 0.98, green: 0.78, blue: 0.72), Color(red: 0.9, green: 0.58, blue: 0.52)],
+                                         startPoint: .top, endPoint: .bottom))
+                    .shadow(color: .black.opacity(0.12), radius: h * 0.08, y: h * 0.06)
+                Capsule()
+                    .stroke(Color.white.opacity(0.5), lineWidth: max(1, h * 0.04))
+                    .padding(h * 0.12)
+                ForEach([0.36, 0.64], id: \.self) { x in
+                    Circle()
+                        .fill(Color(red: 0.8, green: 0.45, blue: 0.42))
+                        .frame(width: h * 0.12, height: h * 0.12)
+                        .position(x: w * x, y: h * 0.5)
+                }
+            }
+        }
+    }
+}
+
 struct Ear: Shape {
     func path(in rect: CGRect) -> Path {
         Path { p in
@@ -263,6 +314,44 @@ public enum JisiArt {
 
     /// JisiKit/Sources/JisiKit/Resources/JisiFace.png（已水平翻转、缩到 512px）。
     public static let face: Image? = load(maxPixel: nil)
+
+    /// 小物件图片（Microsoft Fluent Emoji，见 Art/CREDITS.md）。`small` 用于 Widget / Live Activity。
+    @ViewBuilder
+    public static func prop(_ name: String, small: Bool = false) -> some View {
+        if let image = propImage(name, small: small) {
+            image.resizable().scaledToFit()
+        } else {
+            Color.clear
+        }
+    }
+
+    static func propImage(_ name: String, small: Bool) -> Image? {
+        let key = small ? name + "@small" : name
+        propLock.lock(); defer { propLock.unlock() }
+        if let cached = propCache[key] { return cached }
+        guard let url = Bundle.module.url(forResource: name, withExtension: "png") else { return nil }
+        let image: Image?
+        if small {
+            image = thumbnail(url: url, maxPixel: 96).map { cg in
+                #if canImport(UIKit)
+                Image(uiImage: UIImage(cgImage: cg))
+                #else
+                Image(nsImage: NSImage(cgImage: cg, size: CGSize(width: cg.width, height: cg.height)))
+                #endif
+            }
+        } else {
+            #if canImport(UIKit)
+            image = UIImage(contentsOfFile: url.path).map { Image(uiImage: $0) }
+            #else
+            image = NSImage(contentsOf: url).map { Image(nsImage: $0) }
+            #endif
+        }
+        propCache[key] = image
+        return image
+    }
+
+    nonisolated(unsafe) static var propCache: [String: Image?] = [:]
+    static let propLock = NSLock()
 
     /// 静帧用的小图（锁屏 Widget、Live Activity）。Widget 归档时图片像素面积不能超过 Widget 本身，
     /// 512px 原图放进圆形 / 长方形锁屏 Widget 会渲染失败，只剩灰色占位。

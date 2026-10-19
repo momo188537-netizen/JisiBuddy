@@ -26,6 +26,16 @@ public struct CatLook: Hashable, Sendable {
     public var droop: CGFloat = 0
     /// 进入该状态时弹一下
     public var bounces = false
+    /// 歪头摆动周期（秒）
+    public var tiltPeriod: Double = 2.6
+    /// 伸懒腰：竖直方向拉长的幅度
+    public var stretchAmplitude: CGFloat = 0
+    /// 头的缩放（钻纸箱时小一点）
+    public var headScale: CGFloat = 1
+    /// 小窝物件
+    public var batting = false
+    public var inBox = false
+    public var onCushion = false
 
     public enum EyeState: Hashable, Sendable { case open, half, closed }
 
@@ -61,6 +71,34 @@ public struct CatLook: Hashable, Sendable {
             l.showFish = true
             l.bounces = true
             l.blinks = true
+        case .batting:
+            l.batting = true
+            l.blinks = true
+            l.tiltAmplitude = 9
+            l.tiltPeriod = 0.9
+        case .inBox:
+            l.inBox = true
+            l.blinks = true
+            l.headScale = 0.78
+            l.droop = -0.1
+            l.restingTilt = -4
+        case .cushionNap:
+            l.onCushion = true
+            l.eyes = .closed
+            l.showZzz = true
+            l.droop = 0.02
+            l.headScale = 0.92
+            l.breatheAmplitude = 0.02
+            l.breathePeriod = 5
+        case .stretching:
+            l.eyes = .closed
+            l.stretchAmplitude = 0.07
+            l.restingTilt = -3
+        case .working:
+            l.blinks = true
+            l.tiltAmplitude = 2
+            l.tiltPeriod = 1.8
+            l.headScale = 0.9
         }
         return l
     }

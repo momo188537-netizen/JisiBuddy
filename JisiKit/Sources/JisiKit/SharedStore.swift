@@ -27,7 +27,7 @@ public final class SharedStore: @unchecked Sendable {
     }
 
     enum Key: String {
-        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders
+        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary
     }
 
     func get<T: Decodable>(_ key: Key, as type: T.Type = T.self) -> T? {
@@ -62,9 +62,17 @@ public final class SharedStore: @unchecked Sendable {
         }
     }
 
+    /// 鸡丝能玩的：桌上的东西 + 已得到的毛线球 / 纸箱。
     public var toys: [Toy] {
-        get { get(.toys) ?? Toy.allCases }
-        set { set(newValue, for: .toys) }
+        Toy.deskProps + NestItem.allCases.filter { diary.ownedItems.contains($0) }.compactMap(\.toy)
+    }
+
+    /// nil 表示还没建过（老版本升级上来），App 启动时会从日志补算一次。
+    public var storedDiary: Diary? { self.get(.diary) }
+
+    public var diary: Diary {
+        get { get(.diary) ?? Diary() }
+        set { set(newValue, for: .diary) }
     }
 
     public var lastFedAt: Date? {
@@ -91,6 +99,7 @@ public final class SharedStore: @unchecked Sendable {
             lastInteraction: lastInteraction,
             recentEvents: recentEvents,
             toys: toys,
+            items: diary.ownedItems,
             calendar: calendar
         )
     }
@@ -102,10 +111,17 @@ public final class SharedStore: @unchecked Sendable {
     public func record(_ interaction: Interaction) {
         lastInteraction = interaction
         if interaction.kind == .feed { lastFedAt = interaction.date }
+        let kind: Diary.Kind = switch interaction.kind {
+        case .pet: .pet
+        case .feed: .feed
+        case .yarn, .box, .cushion: .played
+        }
+        diary.record(kind, at: interaction.date)
     }
 
     public func record(_ event: CatEvent) {
         recentEvents = recentEvents + [event]
+        diary.record(Diary.Kind(event.kind), at: event.date)
     }
 }
 
@@ -119,5 +135,27 @@ public struct ReminderSettings: Codable, Hashable, Sendable {
         self.mealsEnabled = mealsEnabled
         self.breaksEnabled = breaksEnabled
         self.breakInterval = breakInterval
+    }
+}
+
+extension Diary.Kind {
+    init(_ event: CatEventKind) {
+        self = switch event {
+        case .clockIn: .clockIn
+        case .clockOut: .clockOut
+        case .ateMeal: .ateMeal
+        case .tookBreak: .tookBreak
+        }
+    }
+
+    /// 日志里的 kind 字符串（`LogEntry.kind`）
+    public init?(logKind: String) {
+        if let e = CatEventKind(rawValue: logKind) { self.init(e); return }
+        switch InteractionKind(rawValue: logKind) {
+        case .pet: self = .pet
+        case .feed: self = .feed
+        case .yarn, .box, .cushion: self = .played
+        case nil: return nil
+        }
     }
 }

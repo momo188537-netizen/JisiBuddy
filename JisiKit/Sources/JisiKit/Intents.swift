@@ -114,4 +114,6 @@ public enum JisiActions {
     public static func feed() async { await InteractionHandler.handle(.feed) }
     public static func ateMeal() async { await InteractionHandler.handle(.ateMeal) }
     public static func tookBreak() async { await InteractionHandler.handle(.tookBreak) }
+    /// 在小窝里点了毛线球 / 纸箱 / 软垫
+    public static func play(_ item: NestItem) async { await InteractionHandler.handle(item.interaction) }
 }

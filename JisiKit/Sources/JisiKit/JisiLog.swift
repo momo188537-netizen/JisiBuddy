@@ -33,10 +33,23 @@ public enum JisiLog {
         context.insert(LogEntry(date: date, kind: kind))
         try? context.save()
     }
+
+    /// 老版本升级上来时还没有 Diary：用完整日志补算一次（物件、纪念、次数）。
+    @MainActor
+    public static func backfillDiaryIfNeeded(store: SharedStore = .shared) {
+        guard store.storedDiary == nil else { return }
+        let entries = (try? container?.mainContext.fetch(FetchDescriptor<LogEntry>(sortBy: [SortDescriptor(\.date)]))) ?? []
+        store.diary = Diary.replaying(entries.map { ($0.kind, $0.date) })
+    }
 }
 #else
 public enum JisiLog {
     @MainActor
     public static func append(_ kind: String, at date: Date = Date()) {}
+
+    @MainActor
+    public static func backfillDiaryIfNeeded(store: SharedStore = .shared) {
+        if store.storedDiary == nil { store.diary = Diary() }
+    }
 }
 #endif

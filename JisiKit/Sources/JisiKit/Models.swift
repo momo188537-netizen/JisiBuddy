@@ -14,6 +14,16 @@ public enum CatPose: String, Codable, CaseIterable, Hashable, Sendable {
     case petted
     /// 互动反应：吃小鱼干
     case fed
+    /// 拍毛线球
+    case batting
+    /// 钻进纸箱只露出头
+    case inBox
+    /// 趴在软垫上打盹
+    case cushionNap
+    /// 伸懒腰
+    case stretching
+    /// 对着电脑假装工作
+    case working
 
     public var isReaction: Bool { self == .petted || self == .fed }
 
@@ -25,21 +35,71 @@ public enum CatPose: String, Codable, CaseIterable, Hashable, Sendable {
         case .sleeping: "睡觉中"
         case .petted: "被摸摸"
         case .fed: "吃东西"
+        case .batting: "玩毛线球"
+        case .inBox: "钻纸箱"
+        case .cushionNap: "软垫上打盹"
+        case .stretching: "伸懒腰"
+        case .working: "假装工作"
         }
     }
 }
 
-/// 摸鱼时手边的小玩具，P0 用 SF Symbols 占位。
+/// 摸鱼时手边的小东西。电脑、咖啡、逗猫棒一直在桌上；毛线球、纸箱要先得到（见 `NestItem`）。
 public enum Toy: String, Codable, CaseIterable, Hashable, Sendable {
     case yarn, laptop, coffee, fishingRod, box
 
-    public var symbolName: String {
+    /// JisiKit/Resources 里的图片名
+    public var assetName: String {
         switch self {
-        case .yarn: "circle.dotted.circle"
-        case .laptop: "laptopcomputer"
-        case .coffee: "cup.and.saucer.fill"
-        case .fishingRod: "fish"
-        case .box: "shippingbox.fill"
+        case .yarn: "ItemYarn"
+        case .laptop: "PropLaptop"
+        case .coffee: "PropCoffee"
+        case .fishingRod: "PropFishingPole"
+        case .box: "ItemBox"
+        }
+    }
+
+    /// 桌上一直有的
+    public static let deskProps: [Toy] = [.laptop, .coffee, .fishingRod]
+}
+
+/// 小窝里的物件：通过相处事件得到，每件都能互动。没有购买、积分或掉落。
+public enum NestItem: String, Codable, CaseIterable, Hashable, Sendable, Identifiable {
+    case yarn, box, cushion
+
+    public var id: String { rawValue }
+
+    public var displayName: String {
+        switch self {
+        case .yarn: "毛线球"
+        case .box: "纸箱"
+        case .cushion: "软垫"
+        }
+    }
+
+    /// 点它时鸡丝做什么
+    public var pose: CatPose {
+        switch self {
+        case .yarn: .batting
+        case .box: .inBox
+        case .cushion: .cushionNap
+        }
+    }
+
+    public var interaction: InteractionKind {
+        switch self {
+        case .yarn: .yarn
+        case .box: .box
+        case .cushion: .cushion
+        }
+    }
+
+    /// 自主行为里对应的玩具（软垫不算玩具）
+    public var toy: Toy? {
+        switch self {
+        case .yarn: .yarn
+        case .box: .box
+        case .cushion: nil
         }
     }
 }
@@ -130,6 +190,17 @@ public struct Schedule: Codable, Hashable, Sendable {
 
 public enum InteractionKind: String, Codable, Hashable, Sendable {
     case pet, feed
+    /// 在小窝里点了毛线球 / 纸箱 / 软垫
+    case yarn, box, cushion
+
+    public var item: NestItem? {
+        switch self {
+        case .yarn: .yarn
+        case .box: .box
+        case .cushion: .cushion
+        case .pet, .feed: nil
+        }
+    }
 }
 
 public struct Interaction: Codable, Hashable, Sendable {

@@ -15,6 +15,8 @@ final class HomeModel {
     private(set) var offerResume = false
     private(set) var session: WorkSession?
     private(set) var isBusy = false
+    private(set) var diary = Diary()
+    private(set) var light: SceneLight = .day
     var errorMessage: String?
 
     var schedule: Schedule {
@@ -38,8 +40,11 @@ final class HomeModel {
     let appGroupOK = SharedStore.isAppGroupAvailable
 
     init() {
+        JisiLog.backfillDiaryIfNeeded()
         snapshot = SharedStore.shared.snapshot()
         schedule = SharedStore.shared.schedule
+        diary = SharedStore.shared.diary
+        light = SceneLight.at(Date(), schedule: SharedStore.shared.schedule)
         reminders = SharedStore.shared.reminders
         live.reattach()
     }
@@ -53,6 +58,12 @@ final class HomeModel {
     func refresh(now: Date = Date()) {
         snapshot = store.snapshot(at: now)
         session = store.session
+        var d = store.diary
+        let count = d.memories.count
+        d.checkAnniversaries(now: now)
+        if d.memories.count != count { store.diary = d }
+        diary = d
+        light = SceneLight.at(now, schedule: store.schedule)
         isWorking = live.isWorking
         offerResume = live.shouldOfferResume(now: now)
     }
@@ -71,6 +82,32 @@ final class HomeModel {
             await JisiActions.feed()
             refresh()
         }
+    }
+
+    /// 在小窝里点了物件
+    func play(_ item: NestItem) {
+        Task {
+            await JisiActions.play(item)
+            refresh()
+        }
+    }
+
+    #if DEBUG
+    func debugUnlockAllItems() {
+        var d = store.diary
+        for item in NestItem.allCases where d.items[item] == nil { d.items[item] = Date() }
+        store.diary = d
+        refresh()
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+    #endif
+
+    /// 关掉「得到了新物件」的提示
+    func dismissGift() {
+        var d = store.diary
+        d.pendingGift = nil
+        store.diary = d
+        refresh()
     }
 
     /// 「带鸡丝上班」，也用于「继续陪伴」恢复（由用户点击触发，绝不自动重启）。

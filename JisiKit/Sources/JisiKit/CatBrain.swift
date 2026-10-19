@@ -11,6 +11,8 @@ public enum CatBrain {
         public var lastInteraction: Interaction?
         public var recentEvents: [CatEvent]
         public var toys: [Toy]
+        /// 已得到的小窝物件（软垫只在这里体现）
+        public var items: Set<NestItem>
         public var calendar: Calendar
 
         public init(
@@ -19,6 +21,7 @@ public enum CatBrain {
             lastInteraction: Interaction? = nil,
             recentEvents: [CatEvent] = [],
             toys: [Toy] = Toy.allCases,
+            items: Set<NestItem> = [],
             calendar: Calendar = .current
         ) {
             self.now = now
@@ -26,6 +29,7 @@ public enum CatBrain {
             self.lastInteraction = lastInteraction
             self.recentEvents = recentEvents
             self.toys = toys
+            self.items = items
             self.calendar = calendar
         }
     }
@@ -33,6 +37,12 @@ public enum CatBrain {
     public static let bucketLength: TimeInterval = 15 * 60
     /// 摸摸 / 喂食后的反应持续多久
     public static let reactionDuration: TimeInterval = 2 * 60
+    /// 玩小窝物件（毛线球、纸箱、软垫）持续多久
+    public static let itemDuration: TimeInterval = 5 * 60
+
+    public static func duration(of kind: InteractionKind) -> TimeInterval {
+        kind.item == nil ? reactionDuration : itemDuration
+    }
     /// 事件（上班、下班、吃了饭）的台词持续多久
     public static let eventDuration: TimeInterval = 15 * 60
 
@@ -56,7 +66,7 @@ public enum CatBrain {
             t = t.addingTimeInterval(bucketLength)
         }
         if let i = input.lastInteraction {
-            let expiry = i.date.addingTimeInterval(reactionDuration)
+            let expiry = i.date.addingTimeInterval(CatBrain.duration(of: i.kind))
             if expiry > start && expiry < end { dates.insert(expiry) }
         }
         for e in input.recentEvents {
@@ -76,13 +86,19 @@ public enum CatBrain {
     static func reaction(_ input: Input) -> CatSnapshot? {
         guard let i = input.lastInteraction else { return nil }
         let age = input.now.timeIntervalSince(i.date)
-        guard age >= 0, age < reactionDuration else { return nil }
+        guard age >= 0, age < duration(of: i.kind) else { return nil }
         let seed = mix(UInt64(bitPattern: Int64(i.date.timeIntervalSince1970.rounded())))
         switch i.kind {
         case .pet:
             return CatSnapshot(pose: .petted, line: Lines.petted.pick(seed), date: input.now)
         case .feed:
             return CatSnapshot(pose: .fed, line: Lines.fed.pick(seed), date: input.now)
+        case .yarn:
+            return CatSnapshot(pose: .batting, line: Lines.batting.pick(seed), toy: .yarn, date: input.now)
+        case .box:
+            return CatSnapshot(pose: .inBox, line: Lines.inBox.pick(seed), toy: .box, date: input.now)
+        case .cushion:
+            return CatSnapshot(pose: .cushionNap, line: Lines.cushionNap.pick(seed), date: input.now)
         }
     }
 
@@ -122,45 +138,87 @@ public enum CatBrain {
         let target = bucketIndex(of: date, dayStart: dayStart)
         let dayKey = dayKey(date, calendar: cal)
 
-        // 从当天第一个桶顺推，保证「不与上一个桶重复」在任何时刻计算都一致。
+        // 从当天第一个桶顺推，保证「不与上一个桶重复」「最近几句不重样」在任何时刻计算都一致。
         var previous: Behavior?
+        var recentLines: [String] = []
         for b in 0...target {
             let t = dayStart.addingTimeInterval(Double(b) * bucketLength)
             let pool = candidates(at: t, input: input)
             let seed = mix(dayKey &* 1_000 &+ UInt64(b))
-            let choices = pool.count > 1 ? pool.filter { $0 != previous } : pool
-            previous = choices[Int(seed % UInt64(choices.count))]
+            var choices = pool.filter { $0 != previous && !recentLines.contains($0.line) }
+            if choices.isEmpty { choices = pool.count > 1 ? pool.filter { $0 != previous } : pool }
+            let pick = choices[Int(seed % UInt64(choices.count))]
+            previous = pick
+            recentLines.append(pick.line)
+            if recentLines.count > recentLineMemory { recentLines.removeFirst() }
         }
         return previous!
     }
 
-    static func candidates(at date: Date, input: Input) -> [Behavior] {
-        let cal = input.calendar
-        let s = input.schedule
+    /// 最近这么多句台词里不重复
+    static let recentLineMemory = 6
+
+    /// 一天里的时间段（按作息算）。
+    enum Period: Equatable {
+        case night, morning, workMorning, mealtime, afternoonSlump, workAfternoon, evening, preBed, weekend
+    }
+
+    static func period(at date: Date, schedule s: Schedule, calendar cal: Calendar) -> Period {
         let now = date.dayTime(cal)
+        if s.isSleepTime(date, calendar: cal) { return .night }
+        func within(_ from: DayTime, minutes: Int) -> Bool {
+            DayTime.isWithin(now, from: from, to: DayTime(0, from.minutes + minutes))
+        }
+        if within(DayTime(0, s.bedtime.minutes - 60), minutes: 60) { return .preBed }
+        if within(DayTime(0, s.lunch.minutes - 30), minutes: 90) || within(DayTime(0, s.dinner.minutes - 30), minutes: 75) {
+            return .mealtime
+        }
+        if within(DayTime(0, s.lunch.minutes + 60), minutes: 90) { return .afternoonSlump }
+        guard s.isWorkday(date, calendar: cal) else { return .weekend }
+        if DayTime.isWithin(now, from: s.workStart, to: s.workEnd) {
+            return now < s.lunch ? .workMorning : .workAfternoon
+        }
+        if DayTime.isWithin(now, from: s.wake, to: s.workStart) { return .morning }
+        return .evening
+    }
 
-        if s.isSleepTime(date, calendar: cal) {
-            return Lines.sleeping.map { Behavior(pose: .sleeping, line: $0) }
+    static func candidates(at date: Date, input: Input) -> [Behavior] {
+        let toys = Set(input.toys)
+        let hasCushion = input.items.contains(.cushion)
+        func make(_ pose: CatPose, _ lines: [String], toy: Toy? = nil) -> [Behavior] {
+            if let toy, !toys.contains(toy) { return [] }
+            return lines.map { Behavior(pose: pose, line: $0, toy: toy) }
         }
+        // 摸鱼小动作：手边有什么玩什么
+        let mischief = make(.playing, Lines.coffee, toy: .coffee)
+            + make(.playing, Lines.fishing, toy: .fishingRod)
+            + make(.batting, Lines.batting, toy: .yarn)
+            + make(.inBox, Lines.inBox, toy: .box)
+        let working = make(.working, Lines.working, toy: .laptop)
+        let stretching = make(.stretching, Lines.stretching)
+        let cushion = hasCushion ? make(.cushionNap, Lines.cushionNap) : []
 
-        let lounging = Lines.lounging.map { Behavior(pose: .lounging, line: $0) }
-        let drowsy = Lines.drowsy.map { Behavior(pose: .drowsy, line: $0) }
-        let toys: [Toy?] = input.toys.isEmpty ? [nil] : input.toys
-        let playing = zip(Lines.playing, Lines.playing.indices).map { line, idx in
-            Behavior(pose: .playing, line: line, toy: toys[idx % toys.count])
+        switch period(at: date, schedule: input.schedule, calendar: input.calendar) {
+        case .night:
+            return hasCushion ? make(.cushionNap, Lines.sleeping) : make(.sleeping, Lines.sleeping)
+        case .morning:
+            return make(.lounging, Lines.morning) + stretching
+        case .workMorning:
+            return make(.lounging, Lines.workMorning) + working + mischief + stretching
+        case .mealtime:
+            return make(.lounging, Lines.mealtime) + make(.playing, Lines.coffee, toy: .coffee)
+        case .afternoonSlump:
+            // 睡键盘：困得趴在电脑上，但不算真的睡着
+            return make(.drowsy, Lines.afternoonSlump) + make(.drowsy, Lines.keyboardNap, toy: .laptop) + cushion
+        case .workAfternoon:
+            return make(.lounging, Lines.workAfternoon) + working + mischief + stretching
+        case .evening:
+            return make(.lounging, Lines.evening) + mischief + stretching + cushion
+        case .preBed:
+            return make(.drowsy, Lines.preBed) + cushion
+        case .weekend:
+            return make(.lounging, Lines.weekend) + mischief + stretching + cushion
         }
-
-        let preBed = DayTime(s.bedtime.hour - 1, s.bedtime.minute)
-        let napStart = DayTime(s.lunch.hour + 1, s.lunch.minute)
-        let napEnd = DayTime(s.lunch.hour + 2, s.lunch.minute + 30)
-        if DayTime.isWithin(now, from: preBed, to: s.bedtime)
-            || DayTime.isWithin(now, from: napStart, to: napEnd) {
-            return drowsy + lounging
-        }
-        if s.isWorkingHours(date, calendar: cal) {
-            return lounging + playing
-        }
-        return lounging + playing + Array(drowsy.prefix(2))
     }
 
     // MARK: - 时间桶与种子
