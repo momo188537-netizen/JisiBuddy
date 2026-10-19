@@ -27,7 +27,7 @@ public final class SharedStore: @unchecked Sendable {
     }
 
     enum Key: String {
-        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary
+        case schedule, lastInteraction, events, toys, snapshot, session, lastFedAt, reminders, diary, preferences
     }
 
     func get<T: Decodable>(_ key: Key, as type: T.Type = T.self) -> T? {
@@ -85,6 +85,11 @@ public final class SharedStore: @unchecked Sendable {
         set { set(newValue, for: .session) }
     }
 
+    public var preferences: Preferences {
+        get { get(.preferences) ?? Preferences() }
+        set { set(newValue, for: .preferences) }
+    }
+
     public var reminders: ReminderSettings {
         get { get(.reminders) ?? ReminderSettings() }
         set { set(newValue, for: .reminders) }
@@ -123,6 +128,11 @@ public final class SharedStore: @unchecked Sendable {
         recentEvents = recentEvents + [event]
         diary.record(Diary.Kind(event.kind), at: event.date)
     }
+}
+
+/// 其他开关（新功能的设置都放这里，备份时一起导出）。
+public struct Preferences: Codable, Hashable, Sendable {
+    public init() {}
 }
 
 public struct ReminderSettings: Codable, Hashable, Sendable {

@@ -34,6 +34,22 @@ public enum JisiLog {
         try? context.save()
     }
 
+    /// 全部日志（导出备份用）
+    @MainActor
+    public static func allRecords() -> [JisiBackup.LogRecord] {
+        let entries = (try? container?.mainContext.fetch(FetchDescriptor<LogEntry>(sortBy: [SortDescriptor(\.date)]))) ?? []
+        return entries.map { .init(date: $0.date, kind: $0.kind) }
+    }
+
+    /// 用备份里的日志替换现有日志
+    @MainActor
+    public static func replaceAll(with records: [JisiBackup.LogRecord]) {
+        guard let context = container?.mainContext else { return }
+        try? context.delete(model: LogEntry.self)
+        for r in records { context.insert(LogEntry(date: r.date, kind: r.kind)) }
+        try? context.save()
+    }
+
     /// 老版本升级上来时还没有 Diary：用完整日志补算一次（物件、纪念、次数）。
     @MainActor
     public static func backfillDiaryIfNeeded(store: SharedStore = .shared) {
@@ -51,5 +67,11 @@ public enum JisiLog {
     public static func backfillDiaryIfNeeded(store: SharedStore = .shared) {
         if store.storedDiary == nil { store.diary = Diary() }
     }
+
+    @MainActor
+    public static func allRecords() -> [JisiBackup.LogRecord] { [] }
+
+    @MainActor
+    public static func replaceAll(with records: [JisiBackup.LogRecord]) {}
 }
 #endif

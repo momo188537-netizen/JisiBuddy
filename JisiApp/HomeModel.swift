@@ -102,6 +102,20 @@ final class HomeModel {
     }
     #endif
 
+    /// 从备份恢复（覆盖当前数据）
+    func restore(_ backup: JisiBackup) {
+        store.restore(backup)
+        JisiLog.replaceAll(with: backup.log)
+        schedule = store.schedule
+        reminders = store.reminders
+        refresh()
+        WidgetCenter.shared.reloadAllTimelines()
+        Task {
+            await live.refresh()
+            await Reminders.shared.reschedule()
+        }
+    }
+
     /// 首页的回忆卡片看过了
     func markMemoriesSeen() {
         var d = store.diary
