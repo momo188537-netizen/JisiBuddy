@@ -17,6 +17,7 @@ public final class PeerConnection: @unchecked Sendable {
     public func start() {
         connection.stateUpdateHandler = { [weak self] state in
             guard let self else { return }
+            print("[peer] 连接 \(self.connection.endpoint)：\(state)")
             switch state {
             case .ready:
                 Task { @MainActor in self.onReady?() }
@@ -204,6 +205,7 @@ public final class PeerClient {
             Task { @MainActor in self?.found(results) }
         }
         b.stateUpdateHandler = { [weak self] state in
+            print("[peer] 查找 Mac：\(state)")
             if case .failed = state {
                 Task { @MainActor in
                     self?.browser?.cancel()
@@ -218,6 +220,7 @@ public final class PeerClient {
     }
 
     private func found(_ results: Set<NWBrowser.Result>) {
+        print("[peer] 找到：\(results.map(\.endpoint))")
         guard running, peer == nil, let result = results.first else { return }
         let p = PeerConnection(NWConnection(to: result.endpoint, using: .jisiPeer))
         p.onReady = { [weak self] in
