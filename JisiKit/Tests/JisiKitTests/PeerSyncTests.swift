@@ -142,3 +142,32 @@ struct PeerLocalTests {
         #expect(mac.snapshot(at: t) == phone.snapshot(at: t))
     }
 }
+
+struct PeerNoticeTests {
+    var calendar: Calendar {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        return c
+    }
+
+    @Test func clockInMentionsClockOutTime() throws {
+        let end = try #require(calendar.date(from: DateComponents(year: 2026, month: 10, day: 20, hour: 18, minute: 30)))
+        let t = try #require(PeerNotice.text(for: .clockIn, expectedClockOut: end, delay: 2, calendar: calendar))
+        #expect(t.title == "电脑上带鸡丝上班啦")
+        #expect(t.body.contains("18:30 下班"))
+        #expect(!t.body.contains("前点的"))
+    }
+
+    @Test func lateDeliverySaysWhen() throws {
+        let t = try #require(PeerNotice.text(for: .clockOut, expectedClockOut: nil, delay: 25 * 60, calendar: calendar))
+        #expect(t.title == "电脑上和鸡丝一起下班啦")
+        #expect(t.body.contains("25 分钟 前点的") || t.body.contains("25 分钟前点的"))
+        let h = try #require(PeerNotice.text(for: .clockOut, expectedClockOut: nil, delay: 90 * 60, calendar: calendar))
+        #expect(h.body.contains("1 小时 30 分钟"))
+    }
+
+    @Test func otherActionsAreQuiet() {
+        #expect(PeerNotice.text(for: .pet, expectedClockOut: nil, delay: 0) == nil)
+        #expect(PeerNotice.text(for: .startMeeting(minutes: 30), expectedClockOut: nil, delay: 0) == nil)
+    }
+}

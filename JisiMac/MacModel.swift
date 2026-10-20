@@ -35,6 +35,10 @@ final class MacModel {
 
     var isWorking: Bool { session?.isOpen == true }
     var isConnected: Bool { peerName != nil }
+    /// 有还没送到 iPhone 的上班 / 下班
+    var hasPendingWork: Bool {
+        outbox.contains { $0.action == .clockIn || $0.action == .clockOut }
+    }
     var listenerError: String? { host.listenerError }
     var isRestDay: Bool { !schedule.isWorkday(now, calendar: .current) }
 

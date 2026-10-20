@@ -7,33 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7C0FE370AAACA1AE9D927639 /* JisiKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5617AC2A24446C9E84216660 /* JisiKit */; };
 		138719F2F7814F2329CAD993 /* JisiKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5D3AA2CB0B74DDC275022B08 /* JisiKit */; };
 		1F3E56FA3903FC4520663A0A /* JisiWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		6A9F60C153C10398C16821FB /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = BDE6931467E1CEEB69D8FFDE /* JisiWatchKit */; };
-		6159AAEE776FE1D020181083 /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = 660A1C57222C32415750B123 /* JisiWatchKit */; };
-		FE1893CCFAD907BD8057125E /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B454C2253C37D97B818DAF9 /* JisiWatchKit */; };
 		2E0872DF76E200B9D86E3C2B /* JisiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F4E06BDFE22D32A32441ABBE /* JisiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		5779FFC1F53B509528863FD4 /* JisiWatchWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4FCB67B6274E92BC090ED68F /* JisiKit in Frameworks */ = {isa = PBXBuildFile; productRef = C2F03D266AB776607E602AD4 /* JisiKit */; };
+		5779FFC1F53B509528863FD4 /* JisiWatchWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6159AAEE776FE1D020181083 /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = 660A1C57222C32415750B123 /* JisiWatchKit */; };
+		6A9F60C153C10398C16821FB /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = BDE6931467E1CEEB69D8FFDE /* JisiWatchKit */; };
+		7C0FE370AAACA1AE9D927639 /* JisiKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5617AC2A24446C9E84216660 /* JisiKit */; };
+		FE1893CCFAD907BD8057125E /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B454C2253C37D97B818DAF9 /* JisiWatchKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9ADCF2CAED6C30B3F5D185AB = {
+		9ADCF2CAED6C30B3F5D185AB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = E8173D1080A28ECDFD3BF6B2;
 			remoteInfo = JisiWidgets;
 		};
-		A47C8D9E6C04A4D17DA90EB8 = {
+		A47C8D9E6C04A4D17DA90EB8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 361B7D4D928FEE083F87C595;
 			remoteInfo = JisiWatch;
 		};
-		DCB2B89930A4636001A74E17 = {
+		DCB2B89930A4636001A74E17 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
 			proxyType = 1;
@@ -43,67 +43,87 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		CF85AC55444E92E2A151D05E = {
+		4C4802201AD04611B8154E48 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
-			name = "Embed Foundation Extensions";
 			files = (
-				1F3E56FA3903FC4520663A0A /* JisiWidgets.appex in Embed Foundation Extensions */,
+				5779FFC1F53B509528863FD4 /* JisiWatchWidgets.appex in Embed Foundation Extensions */,
 			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6E8718158237C993CEAF2DCD = {
+		6E8718158237C993CEAF2DCD /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
-			name = "Embed Watch Content";
 			files = (
 				2E0872DF76E200B9D86E3C2B /* JisiWatch.app in Embed Watch Content */,
 			);
+			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4C4802201AD04611B8154E48 = {
+		CF85AC55444E92E2A151D05E /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
-			name = "Embed Foundation Extensions";
 			files = (
-				5779FFC1F53B509528863FD4 /* JisiWatchWidgets.appex in Embed Foundation Extensions */,
+				1F3E56FA3903FC4520663A0A /* JisiWidgets.appex in Embed Foundation Extensions */,
 			);
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		81918909E83595C8F4212CCC /* JisiBuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JisiBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		178B7CBBE97AE0EC010A4867 /* JisiApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiApp-Info.plist"; sourceTree = "<group>"; };
 		1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = JisiWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		B38B1EDD93DBC348FE880F6E /* JisiApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiApp.entitlements; sourceTree = "<group>"; };
-		D9947F9169C758DC74A626CB /* JisiWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWidgets.entitlements; sourceTree = "<group>"; };
 		3E34FCB2D82D0B0ACEF2D21B /* JisiWidgets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiWidgets-Info.plist"; sourceTree = "<group>"; };
-		F4E06BDFE22D32A32441ABBE /* JisiWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JisiWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = JisiWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E14C06D8EEA2E258C47136F /* JisiWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWatch.entitlements; sourceTree = "<group>"; };
 		71BCD5D3F9B05645906DA37F /* JisiWatchWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWatchWidgets.entitlements; sourceTree = "<group>"; };
+		81918909E83595C8F4212CCC /* JisiBuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JisiBuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B38B1EDD93DBC348FE880F6E /* JisiApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiApp.entitlements; sourceTree = "<group>"; };
+		CF68D0CEA843E17E962F50D3 /* JisiMac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiMac-Info.plist"; sourceTree = "<group>"; };
+		D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = JisiWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9947F9169C758DC74A626CB /* JisiWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWidgets.entitlements; sourceTree = "<group>"; };
 		DFB884500D5C9C781C84544C /* JisiWatchWidgets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiWatchWidgets-Info.plist"; sourceTree = "<group>"; };
 		E262AAAC0B195A2711F4CC74 /* 鸡丝.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "鸡丝.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		178B7CBBE97AE0EC010A4867 /* JisiApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiApp-Info.plist"; sourceTree = "<group>"; };
-		CF68D0CEA843E17E962F50D3 /* JisiMac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiMac-Info.plist"; sourceTree = "<group>"; };
+		F4E06BDFE22D32A32441ABBE /* JisiWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JisiWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7473483A43462C90F2B0E062 /* JisiApp */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiApp; sourceTree = "<group>"; };
-		93D564B80441CCC06F962DEB /* JisiWidgets */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiWidgets; sourceTree = "<group>"; };
-		FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiWatch; sourceTree = "<group>"; };
-		2559BCCAE69226D81C4E1B1E /* JisiWatchWidgets */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiWatchWidgets; sourceTree = "<group>"; };
-		49F75CB90E99993CD111801A /* JisiMac */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiMac; sourceTree = "<group>"; };
+		2559BCCAE69226D81C4E1B1E /* JisiWatchWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JisiWatchWidgets;
+			sourceTree = "<group>";
+		};
+		49F75CB90E99993CD111801A /* JisiMac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JisiMac;
+			sourceTree = "<group>";
+		};
+		7473483A43462C90F2B0E062 /* JisiApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JisiApp;
+			sourceTree = "<group>";
+		};
+		93D564B80441CCC06F962DEB /* JisiWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JisiWidgets;
+			sourceTree = "<group>";
+		};
+		FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JisiWatch;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0248D6DB510EB0F7E9C05175 = {
+		0248D6DB510EB0F7E9C05175 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -112,15 +132,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C2B571F11AF4AD9F122E48C3 = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				138719F2F7814F2329CAD993 /* JisiKit in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0F1DC2FF14A45FBF78CFDBDF = {
+		0F1DC2FF14A45FBF78CFDBDF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,7 +140,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4A321216E9705F45524AA570 = {
+		4A321216E9705F45524AA570 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -136,7 +148,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DB0AE8B2E2C35ACC5F7B5960 = {
+		C2B571F11AF4AD9F122E48C3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				138719F2F7814F2329CAD993 /* JisiKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DB0AE8B2E2C35ACC5F7B5960 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -147,17 +167,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8D3FC6DB5D0827F168A73277 = {
+		1BADDC1D73C1A20F347483E1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7473483A43462C90F2B0E062 /* JisiApp */,
-				93D564B80441CCC06F962DEB /* JisiWidgets */,
-				FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */,
-				2559BCCAE69226D81C4E1B1E /* JisiWatchWidgets */,
-				49F75CB90E99993CD111801A /* JisiMac */,
-				7173545D75AC56744F55E81B /* Config */,
-				1BADDC1D73C1A20F347483E1 /* Products */,
+				81918909E83595C8F4212CCC /* JisiBuddy.app */,
+				1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */,
+				F4E06BDFE22D32A32441ABBE /* JisiWatch.app */,
+				D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */,
+				E262AAAC0B195A2711F4CC74 /* 鸡丝.app */,
 			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		7173545D75AC56744F55E81B /* Config */ = {
@@ -175,24 +194,50 @@
 			path = Config;
 			sourceTree = "<group>";
 		};
-		1BADDC1D73C1A20F347483E1 /* Products */ = {
+		8D3FC6DB5D0827F168A73277 = {
 			isa = PBXGroup;
 			children = (
-				81918909E83595C8F4212CCC /* JisiBuddy.app */,
-				1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */,
-				F4E06BDFE22D32A32441ABBE /* JisiWatch.app */,
-				D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */,
-				E262AAAC0B195A2711F4CC74 /* 鸡丝.app */,
+				7473483A43462C90F2B0E062 /* JisiApp */,
+				93D564B80441CCC06F962DEB /* JisiWidgets */,
+				FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */,
+				2559BCCAE69226D81C4E1B1E /* JisiWatchWidgets */,
+				49F75CB90E99993CD111801A /* JisiMac */,
+				7173545D75AC56744F55E81B /* Config */,
+				1BADDC1D73C1A20F347483E1 /* Products */,
 			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		361B7D4D928FEE083F87C595 /* JisiWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 821E04E5702FFBFF49876B86 /* Build configuration list for PBXNativeTarget "JisiWatch" */;
+			buildPhases = (
+				20179E75B0E9400620538D72 /* Sources */,
+				0F1DC2FF14A45FBF78CFDBDF /* Frameworks */,
+				3C2C5EEA477D7EF260EF0631 /* Resources */,
+				4C4802201AD04611B8154E48 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				56D8890B187D6C851982C726 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */,
+			);
+			name = JisiWatch;
+			packageProductDependencies = (
+				660A1C57222C32415750B123 /* JisiWatchKit */,
+			);
+			productName = JisiWatch;
+			productReference = F4E06BDFE22D32A32441ABBE /* JisiWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 		3D4C91345015A4DD0A099400 /* JisiApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A7698C201D2A724C7CAD56C8;
+			buildConfigurationList = A7698C201D2A724C7CAD56C8 /* Build configuration list for PBXNativeTarget "JisiApp" */;
 			buildPhases = (
 				DA10D9DD089DF2AFEBC5ED5A /* Sources */,
 				0248D6DB510EB0F7E9C05175 /* Frameworks */,
@@ -218,57 +263,9 @@
 			productReference = 81918909E83595C8F4212CCC /* JisiBuddy.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E8173D1080A28ECDFD3BF6B2 /* JisiWidgets */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3F59827C101A29CE78995EC2;
-			buildPhases = (
-				C861C1B2713F1DA729267477 /* Sources */,
-				C2B571F11AF4AD9F122E48C3 /* Frameworks */,
-				3EB9B1A63CB0AF905AC09EAB /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				93D564B80441CCC06F962DEB /* JisiWidgets */,
-			);
-			name = JisiWidgets;
-			packageProductDependencies = (
-				5D3AA2CB0B74DDC275022B08 /* JisiKit */,
-			);
-			productName = JisiWidgets;
-			productReference = 1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		361B7D4D928FEE083F87C595 /* JisiWatch */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 821E04E5702FFBFF49876B86;
-			buildPhases = (
-				20179E75B0E9400620538D72 /* Sources */,
-				0F1DC2FF14A45FBF78CFDBDF /* Frameworks */,
-				3C2C5EEA477D7EF260EF0631 /* Resources */,
-				4C4802201AD04611B8154E48 /* Embed Foundation Extensions */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				56D8890B187D6C851982C726 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */,
-			);
-			name = JisiWatch;
-			packageProductDependencies = (
-				660A1C57222C32415750B123 /* JisiWatchKit */,
-			);
-			productName = JisiWatch;
-			productReference = F4E06BDFE22D32A32441ABBE /* JisiWatch.app */;
-			productType = "com.apple.product-type.application";
-		};
 		640645859680FECE10D3AC8A /* JisiWatchWidgets */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7CE058667B4AA1702A29B0F0;
+			buildConfigurationList = 7CE058667B4AA1702A29B0F0 /* Build configuration list for PBXNativeTarget "JisiWatchWidgets" */;
 			buildPhases = (
 				4351934EE1E6AF2B902466CF /* Sources */,
 				4A321216E9705F45524AA570 /* Frameworks */,
@@ -291,7 +288,7 @@
 		};
 		8857B01D48E68B78A16501D4 /* JisiMac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 16CA0425C7D2D2E28B30DCA0;
+			buildConfigurationList = 16CA0425C7D2D2E28B30DCA0 /* Build configuration list for PBXNativeTarget "JisiMac" */;
 			buildPhases = (
 				4C5CBF1061B73ABAEB31C8A1 /* Sources */,
 				DB0AE8B2E2C35ACC5F7B5960 /* Frameworks */,
@@ -312,6 +309,29 @@
 			productReference = E262AAAC0B195A2711F4CC74 /* 鸡丝.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E8173D1080A28ECDFD3BF6B2 /* JisiWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3F59827C101A29CE78995EC2 /* Build configuration list for PBXNativeTarget "JisiWidgets" */;
+			buildPhases = (
+				C861C1B2713F1DA729267477 /* Sources */,
+				C2B571F11AF4AD9F122E48C3 /* Frameworks */,
+				3EB9B1A63CB0AF905AC09EAB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				93D564B80441CCC06F962DEB /* JisiWidgets */,
+			);
+			name = JisiWidgets;
+			packageProductDependencies = (
+				5D3AA2CB0B74DDC275022B08 /* JisiKit */,
+			);
+			productName = JisiWidgets;
+			productReference = 1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -322,13 +342,10 @@
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
-					3D4C91345015A4DD0A099400 = {
-						CreatedOnToolsVersion = 16.0;
-					};
-					E8173D1080A28ECDFD3BF6B2 = {
-						CreatedOnToolsVersion = 16.0;
-					};
 					361B7D4D928FEE083F87C595 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					3D4C91345015A4DD0A099400 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 					640645859680FECE10D3AC8A = {
@@ -337,9 +354,12 @@
 					8857B01D48E68B78A16501D4 = {
 						CreatedOnToolsVersion = 16.0;
 					};
+					E8173D1080A28ECDFD3BF6B2 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 				};
 			};
-			buildConfigurationList = 56283EBD6DD86A56CED63937;
+			buildConfigurationList = 56283EBD6DD86A56CED63937 /* Build configuration list for PBXProject "JisiBuddy" */;
 			developmentRegion = "zh-Hans";
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -366,35 +386,35 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		82A968CB662751220D4DFE2D = {
+		3C2C5EEA477D7EF260EF0631 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3EB9B1A63CB0AF905AC09EAB = {
+		3EB9B1A63CB0AF905AC09EAB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3C2C5EEA477D7EF260EF0631 = {
+		82A968CB662751220D4DFE2D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B96ABDE8C12CCBC3841F5BCF = {
+		A5E8826EA02118DE913C3706 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A5E8826EA02118DE913C3706 = {
+		B96ABDE8C12CCBC3841F5BCF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -404,35 +424,35 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		DA10D9DD089DF2AFEBC5ED5A = {
+		20179E75B0E9400620538D72 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C861C1B2713F1DA729267477 = {
+		4351934EE1E6AF2B902466CF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		20179E75B0E9400620538D72 = {
+		4C5CBF1061B73ABAEB31C8A1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4351934EE1E6AF2B902466CF = {
+		C861C1B2713F1DA729267477 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4C5CBF1061B73ABAEB31C8A1 = {
+		DA10D9DD089DF2AFEBC5ED5A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -442,15 +462,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		551BDF5D8808EFCFB21091A6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E8173D1080A28ECDFD3BF6B2 /* JisiWidgets */;
-			targetProxy = 9ADCF2CAED6C30B3F5D185AB /* PBXContainerItemProxy */;
-		};
 		3F32F16ED4183E619CA3F174 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 361B7D4D928FEE083F87C595 /* JisiWatch */;
 			targetProxy = A47C8D9E6C04A4D17DA90EB8 /* PBXContainerItemProxy */;
+		};
+		551BDF5D8808EFCFB21091A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8173D1080A28ECDFD3BF6B2 /* JisiWidgets */;
+			targetProxy = 9ADCF2CAED6C30B3F5D185AB /* PBXContainerItemProxy */;
 		};
 		56D8890B187D6C851982C726 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -460,112 +480,41 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		FA9139DD8B03E3F922556BF8 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = "NO";
-				CLANG_ENABLE_MODULES = "YES";
-				CLANG_ENABLE_OBJC_ARC = "YES";
-				ENABLE_STRICT_OBJC_MSGSEND = "YES";
-				ENABLE_USER_SCRIPT_SANDBOXING = "YES";
-				GCC_C_LANGUAGE_STANDARD = "gnu17";
-				IPHONEOS_DEPLOYMENT_TARGET = "17.0";
-				LOCALIZATION_PREFERS_STRING_CATALOGS = "YES";
-				SDKROOT = "iphoneos";
-				SWIFT_VERSION = "5.0";
-				DEVELOPMENT_TEAM = "BY5X8QUWJ3";
-				DEBUG_INFORMATION_FORMAT = "dwarf";
-				ENABLE_TESTABILITY = "YES";
-				GCC_OPTIMIZATION_LEVEL = "0";
-				ONLY_ACTIVE_ARCH = "YES";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		FFE2104CCFAB79205AC64460 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = "NO";
-				CLANG_ENABLE_MODULES = "YES";
-				CLANG_ENABLE_OBJC_ARC = "YES";
-				ENABLE_STRICT_OBJC_MSGSEND = "YES";
-				ENABLE_USER_SCRIPT_SANDBOXING = "YES";
-				GCC_C_LANGUAGE_STANDARD = "gnu17";
-				IPHONEOS_DEPLOYMENT_TARGET = "17.0";
-				LOCALIZATION_PREFERS_STRING_CATALOGS = "YES";
-				SDKROOT = "iphoneos";
-				SWIFT_VERSION = "5.0";
-				DEVELOPMENT_TEAM = "BY5X8QUWJ3";
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				SWIFT_COMPILATION_MODE = "wholemodule";
-				VALIDATE_PRODUCT = "YES";
-			};
-			name = Release;
-		};
-		72FB3ED29B4639D83EC5DB14 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiApp.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
-				INFOPLIST_FILE = "Config/JisiApp-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 Mac 菜单栏鸡丝同步上班状态。";
-				INFOPLIST_KEY_NSSupportsLiveActivities = "YES";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = "YES";
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = "YES";
-				INFOPLIST_KEY_UILaunchScreen_Generation = "YES";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy";
-				PRODUCT_NAME = "JisiBuddy";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "1";
-			};
-			name = Debug;
-		};
 		191734982F22ABEBB64A1AE0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiApp.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/JisiApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/JisiApp-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 Mac 菜单栏鸡丝同步上班状态。";
-				INFOPLIST_KEY_NSSupportsLiveActivities = "YES";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = "YES";
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = "YES";
-				INFOPLIST_KEY_UILaunchScreen_Generation = "YES";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy";
-				PRODUCT_NAME = "JisiBuddy";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "1";
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy;
+				PRODUCT_NAME = JisiBuddy;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 		2D74CA302FF4E1F0293F50B2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiWidgets.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
+				CODE_SIGN_ENTITLEMENTS = Config/JisiWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/JisiWidgets-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -573,124 +522,77 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.widgets";
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = "YES";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "1";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
-		};
-		999D00FC968E12EBDA6FF541 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiWidgets.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
-				INFOPLIST_FILE = "Config/JisiWidgets-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.widgets";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = "YES";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "1";
-			};
-			name = Release;
 		};
 		6FBD51DB18231ABFF2CDD9BA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiWatch.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/JisiWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "com.zixu.jisibuddy";
-				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = "NO";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.zixu.jisibuddy;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.watchkitapp";
-				PRODUCT_NAME = "JisiWatch";
-				SDKROOT = "watchos";
-				SKIP_INSTALL = "YES";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "4";
-				WATCHOS_DEPLOYMENT_TARGET = "10.0";
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.watchkitapp;
+				PRODUCT_NAME = JisiWatch;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
-		BB715A6C1D164219EF385BF0 /* Release */ = {
+		72FB3ED29B4639D83EC5DB14 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiWatch.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/JisiApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/JisiApp-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "com.zixu.jisibuddy";
-				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = "NO";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 Mac 菜单栏鸡丝同步上班状态。";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.watchkitapp";
-				PRODUCT_NAME = "JisiWatch";
-				SDKROOT = "watchos";
-				SKIP_INSTALL = "YES";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "4";
-				WATCHOS_DEPLOYMENT_TARGET = "10.0";
-			};
-			name = Release;
-		};
-		BDAA51F2A02E02C294CEA961 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiWatchWidgets.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
-				INFOPLIST_FILE = "Config/JisiWatchWidgets-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.watchkitapp.widgets";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "watchos";
-				SKIP_INSTALL = "YES";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "4";
-				WATCHOS_DEPLOYMENT_TARGET = "10.0";
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy;
+				PRODUCT_NAME = JisiBuddy;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		83E3E574878412DFED089BE1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Config/JisiWatchWidgets.entitlements";
-				CODE_SIGN_STYLE = "Automatic";
-				CURRENT_PROJECT_VERSION = "3";
-				GENERATE_INFOPLIST_FILE = "YES";
+				CODE_SIGN_ENTITLEMENTS = Config/JisiWatchWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/JisiWatchWidgets-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -698,99 +600,208 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.watchkitapp.widgets";
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.watchkitapp.widgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "watchos";
-				SKIP_INSTALL = "YES";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
-				TARGETED_DEVICE_FAMILY = "4";
-				WATCHOS_DEPLOYMENT_TARGET = "10.0";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
 		879786BAEDB1AAB9CF1CEE6C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = "Manual";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				COMBINE_HIDPI_IMAGES = "YES";
-				CURRENT_PROJECT_VERSION = "3";
-				ENABLE_HARDENED_RUNTIME = "NO";
-				GENERATE_INFOPLIST_FILE = "YES";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 3;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/JisiMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_LSUIElement = "YES";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 iPhone 鸡丝同步上班状态。";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "14.0";
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.mac";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.mac;
 				PRODUCT_NAME = "鸡丝";
-				SDKROOT = "macosx";
-				SUPPORTED_PLATFORMS = "macosx";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		999D00FC968E12EBDA6FF541 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/JisiWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/JisiWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		BB715A6C1D164219EF385BF0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/JisiWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.zixu.jisibuddy;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.watchkitapp;
+				PRODUCT_NAME = JisiWatch;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		BDAA51F2A02E02C294CEA961 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/JisiWatchWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/JisiWatchWidgets-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.watchkitapp.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
 		F32F3356838B010091B25A45 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = "Manual";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				COMBINE_HIDPI_IMAGES = "YES";
-				CURRENT_PROJECT_VERSION = "3";
-				ENABLE_HARDENED_RUNTIME = "NO";
-				GENERATE_INFOPLIST_FILE = "YES";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 3;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/JisiMac-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_LSUIElement = "YES";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 iPhone 鸡丝同步上班状态。";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "14.0";
-				MARKETING_VERSION = "0.1";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.mac";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zixu.jisibuddy.mac;
 				PRODUCT_NAME = "鸡丝";
-				SDKROOT = "macosx";
-				SUPPORTED_PLATFORMS = "macosx";
-				SWIFT_EMIT_LOC_STRINGS = "YES";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		FA9139DD8B03E3F922556BF8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = BY5X8QUWJ3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FFE2104CCFAB79205AC64460 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BY5X8QUWJ3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56283EBD6DD86A56CED63937 = {
+		16CA0425C7D2D2E28B30DCA0 /* Build configuration list for PBXNativeTarget "JisiMac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FA9139DD8B03E3F922556BF8 /* Debug */,
-				FFE2104CCFAB79205AC64460 /* Release */,
+				879786BAEDB1AAB9CF1CEE6C /* Debug */,
+				F32F3356838B010091B25A45 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A7698C201D2A724C7CAD56C8 = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				72FB3ED29B4639D83EC5DB14 /* Debug */,
-				191734982F22ABEBB64A1AE0 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3F59827C101A29CE78995EC2 = {
+		3F59827C101A29CE78995EC2 /* Build configuration list for PBXNativeTarget "JisiWidgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2D74CA302FF4E1F0293F50B2 /* Debug */,
@@ -799,16 +810,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		821E04E5702FFBFF49876B86 = {
+		56283EBD6DD86A56CED63937 /* Build configuration list for PBXProject "JisiBuddy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6FBD51DB18231ABFF2CDD9BA /* Debug */,
-				BB715A6C1D164219EF385BF0 /* Release */,
+				FA9139DD8B03E3F922556BF8 /* Debug */,
+				FFE2104CCFAB79205AC64460 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7CE058667B4AA1702A29B0F0 = {
+		7CE058667B4AA1702A29B0F0 /* Build configuration list for PBXNativeTarget "JisiWatchWidgets" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BDAA51F2A02E02C294CEA961 /* Debug */,
@@ -817,11 +828,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		16CA0425C7D2D2E28B30DCA0 = {
+		821E04E5702FFBFF49876B86 /* Build configuration list for PBXNativeTarget "JisiWatch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				879786BAEDB1AAB9CF1CEE6C /* Debug */,
-				F32F3356838B010091B25A45 /* Release */,
+				6FBD51DB18231ABFF2CDD9BA /* Debug */,
+				BB715A6C1D164219EF385BF0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A7698C201D2A724C7CAD56C8 /* Build configuration list for PBXNativeTarget "JisiApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				72FB3ED29B4639D83EC5DB14 /* Debug */,
+				191734982F22ABEBB64A1AE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -836,6 +856,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		3B454C2253C37D97B818DAF9 /* JisiWatchKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = JisiWatchKit;
+		};
 		5617AC2A24446C9E84216660 /* JisiKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = JisiKit;
@@ -844,15 +868,11 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = JisiKit;
 		};
-		BDE6931467E1CEEB69D8FFDE /* JisiWatchKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = JisiWatchKit;
-		};
 		660A1C57222C32415750B123 /* JisiWatchKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = JisiWatchKit;
 		};
-		3B454C2253C37D97B818DAF9 /* JisiWatchKit */ = {
+		BDE6931467E1CEEB69D8FFDE /* JisiWatchKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = JisiWatchKit;
 		};

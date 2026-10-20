@@ -10,6 +10,7 @@ struct MenuView: View {
         VStack(spacing: 12) {
             if let until = model.meetingUntil { meetingBanner(until) }
             if model.askMood { moodCard }
+            if !model.isConnected, model.hasPendingWork { pendingBanner }
 
             Text(model.snapshot.line)
                 .font(.callout.weight(.medium))
@@ -150,6 +151,19 @@ struct MenuView: View {
                 .font(.caption)
         }
         .padding(10)
+        .background(Color.orange.opacity(0.1), in: .rect(cornerRadius: 10))
+    }
+
+    /// iPhone 上的鸡丝在后台时连不上：上下班先记在 Mac 上，手机（灵动岛、手表）要等打开鸡丝才跟着变
+    private var pendingBanner: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "iphone.slash").foregroundStyle(.orange)
+            Text("已记下。iPhone 上的鸡丝没开着，打开它几秒内手机、灵动岛和手表就会跟着变。")
+                .font(.caption)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.orange.opacity(0.1), in: .rect(cornerRadius: 10))
     }
 

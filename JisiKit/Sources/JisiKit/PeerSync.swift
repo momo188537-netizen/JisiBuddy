@@ -200,3 +200,33 @@ public enum PeerLocal {
         }
     }
 }
+
+/// iPhone 执行了 Mac 发来的上班 / 下班后弹一条通知，让手机这边看得到（App 开着时也会弹横幅）。
+public enum PeerNotice {
+    public static let requestID = "jisi.mac.work"
+
+    /// - delay: 送到 iPhone 时距离 Mac 上点击过了多久（iPhone 当时在后台、打开 App 才收到的情况）
+    public static func text(for action: PeerCommand.Action, expectedClockOut: Date?, delay: TimeInterval,
+                            calendar: Calendar = .current) -> (title: String, body: String)? {
+        let late = delay >= 60 ? "（电脑上 \(minutesText(delay)) 前点的）" : ""
+        switch action {
+        case .clockIn:
+            let end = expectedClockOut.map { "，\(clock($0, calendar: calendar)) 下班" } ?? ""
+            return ("电脑上带鸡丝上班啦", "鸡丝已经在锁屏和灵动岛陪你了\(end)\(late)")
+        case .clockOut:
+            return ("电脑上和鸡丝一起下班啦", "今天辛苦啦，鸡丝回小窝了\(late)")
+        default:
+            return nil
+        }
+    }
+
+    static func clock(_ date: Date, calendar: Calendar) -> String {
+        let c = calendar.dateComponents([.hour, .minute], from: date)
+        return String(format: "%d:%02d", c.hour ?? 0, c.minute ?? 0)
+    }
+
+    static func minutesText(_ t: TimeInterval) -> String {
+        let m = Int(t / 60)
+        return m < 60 ? "\(m) 分钟" : "\(m / 60) 小时\(m % 60 == 0 ? "" : " \(m % 60) 分钟")"
+    }
+}
