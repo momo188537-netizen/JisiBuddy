@@ -57,7 +57,6 @@ extension ClockOutNotice {
         content.body = body
         content.categoryIdentifier = category
         content.sound = .default
-        if let attachment = faceAttachment() { content.attachments = [attachment] }
         return content
     }
 
@@ -73,14 +72,6 @@ extension ClockOutNotice {
         UNNotificationCategory(identifier: category,
                                actions: [UNNotificationAction(identifier: clockOutAction, title: "一起下班", options: [])],
                                intentIdentifiers: [])
-    }
-
-    /// 通知里带鸡丝头像（系统会移走附件文件，所以拷一份）
-    public static func faceAttachment() -> UNNotificationAttachment? {
-        guard let src = JisiArt.faceURL else { return nil }
-        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("jisi-\(UUID().uuidString).png")
-        guard (try? FileManager.default.copyItem(at: src, to: tmp)) != nil else { return nil }
-        return try? UNNotificationAttachment(identifier: "jisi", url: tmp)
     }
 }
 #endif

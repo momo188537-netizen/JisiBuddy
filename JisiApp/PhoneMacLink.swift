@@ -167,7 +167,6 @@ final class PhoneMacLink {
         content.title = text.title
         content.body = text.body
         content.sound = .default
-        if let face = ClockOutNotice.faceAttachment() { content.attachments = [face] }
         center.removeDeliveredNotifications(withIdentifiers: [PeerNotice.requestID])
         try? await center.add(UNNotificationRequest(identifier: PeerNotice.requestID, content: content, trigger: nil))
     }

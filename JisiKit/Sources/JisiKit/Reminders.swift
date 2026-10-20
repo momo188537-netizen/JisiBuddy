@@ -123,7 +123,6 @@ public final class Reminders {
         content.body = body
         content.categoryIdentifier = category
         content.sound = .default
-        if let attachment = ClockOutNotice.faceAttachment() { content.attachments = [attachment] }
         return content
     }
 }
