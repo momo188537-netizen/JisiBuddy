@@ -1,4 +1,5 @@
 import JisiKit
+import JisiWatchKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -33,19 +34,21 @@ struct SettingsView: View {
                 } header: {
                     Text("工作日")
                 } footer: {
-                    Text("休息日鸡丝窝在家里，不发休息提醒和下班提醒；饭点提醒照常。周末加班也可以带上鸡丝。")
+                    Text("休息日鸡丝窝在家里，不发下班提醒；饭点提醒照常。周末加班也可以带上鸡丝。")
                 }
 
                 Section {
                     Toggle("饭点提醒", isOn: $model.reminders.mealsEnabled)
-                    Toggle("休息提醒", isOn: $model.reminders.breaksEnabled)
+                    Toggle("久坐提醒（Apple Watch）", isOn: $model.reminders.breaksEnabled)
                     if model.reminders.breaksEnabled {
-                        Stepper("每 \(model.reminders.breakInterval) 分钟", value: $model.reminders.breakInterval, in: 30...180, step: 15)
+                        Picker("坐多久提醒", selection: $model.reminders.breakInterval) {
+                            ForEach(StandPlan.choices, id: \.self) { Text("\($0) 分钟").tag($0) }
+                        }
                     }
                 } header: {
                     Text("提醒")
                 } footer: {
-                    Text("提醒里可以直接点「吃了」「休息了」，鸡丝会知道。不点也没关系。")
+                    Text("饭点提醒里可以直接点「吃了」，鸡丝会知道。久坐提醒只在手表上轻敲手腕：带鸡丝上班期间，从上班或上次点「站起来了」开始计时，开会和午饭前后不打扰。想用它代替手表自带的站立提醒，可以在 iPhone「Watch」App > 活动 里关掉「站立提醒」。")
                 }
                 Section {
                     Toggle("下班时问一句「今天累不累」", isOn: Binding(
@@ -66,6 +69,7 @@ struct SettingsView: View {
                     Button("1 分钟后发一条测试下班提醒") {
                         Task { await Reminders.shared.sendTestClockOut() }
                     }
+                    Button("手表：1 分钟后发一条久坐提醒") { PhoneWatchLink.shared.sendStandTest() }
                     Button("得到全部小窝物件") { model.debugUnlockAllItems() }
                 }
                 #endif

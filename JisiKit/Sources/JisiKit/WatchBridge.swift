@@ -8,21 +8,25 @@ extension Notification.Name {
 
 extension WatchState {
     /// iPhone 上的会话 → 推给手表的状态。
-    public init(session: WorkSession?, schedule: Schedule, now: Date) {
+    public init(session: WorkSession?, schedule: Schedule, now: Date,
+                reminders: ReminderSettings = ReminderSettings(), meetingUntil: Date? = nil) {
         let open = session?.isOpen == true
         self.init(
             isWorking: open,
             startedAt: open ? session?.startedAt : nil,
             expectedClockOut: open ? session?.expectedClockOut : nil,
             workEndMinutes: schedule.workEnd.minutes,
-            updatedAt: now
+            updatedAt: now,
+            standInterval: reminders.breaksEnabled ? StandPlan.normalized(reminders.breakInterval) : nil,
+            meetingUntil: meetingUntil.flatMap { $0 > now ? $0 : nil },
+            lunchMinutes: schedule.lunch.minutes
         )
     }
 }
 
 extension SharedStore {
     public func watchState(now: Date = Date()) -> WatchState {
-        WatchState(session: session, schedule: schedule, now: now)
+        WatchState(session: session, schedule: schedule, now: now, reminders: reminders, meetingUntil: meetingUntil)
     }
 }
 

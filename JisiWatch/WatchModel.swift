@@ -19,10 +19,14 @@ final class WatchModel: NSObject {
     private(set) var note: String?
 
     private let store = WatchStateStore()
+    /// 下一次久坐提醒（首页小字显示）
+    private(set) var nextStand: Date?
 
     override init() {
         state = store.load() ?? .initial
         super.init()
+        StandReminder.shared.setUp()
+        rescheduleStand()
         if WCSession.isSupported() {
             WCSession.default.delegate = self
             WCSession.default.activate()
@@ -92,6 +96,19 @@ final class WatchModel: NSObject {
         state = new
         store.save(new)
         if changed { WidgetCenter.shared.reloadAllTimelines() }
+        rescheduleStand()
+    }
+
+    func rescheduleStand() {
+        nextStand = StandReminder.shared.nextDate(for: state)
+        let state = state
+        Task { await StandReminder.shared.reschedule(for: state) }
+    }
+
+    /// 点了「站起来了」
+    func didStand() {
+        expression = .love
+        nextStand = StandReminder.shared.nextDate(for: state)
     }
 }
 
@@ -107,12 +124,20 @@ extension WatchModel: WCSessionDelegate {
 
     /// iPhone 可达时即时推来的状态
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        if WatchCodec.isStandTest(message) {
+            Task { await StandReminder.shared.scheduleTest() }
+            return
+        }
         guard let state = WatchCodec.state(from: message) else { return }
         Task { @MainActor in self.receive(state) }
     }
 
     /// iPhone 为表盘复杂功能发的 transferCurrentComplicationUserInfo（手表 App 不在前台也会送到）
     nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+        if WatchCodec.isStandTest(userInfo) {
+            Task { await StandReminder.shared.scheduleTest() }
+            return
+        }
         guard let state = WatchCodec.state(from: userInfo) else { return }
         Task { @MainActor in self.receive(state) }
     }

@@ -33,6 +33,12 @@ struct WatchHomeView: View {
                         .tint(.orange)
                 }
 
+                if phase.isWorking, let next = model.nextStand, next > context.date {
+                    Text("久坐提醒 \(WatchCountdown.clockText(next))")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+
                 if let note = model.note {
                     Text(note)
                         .font(.caption2)

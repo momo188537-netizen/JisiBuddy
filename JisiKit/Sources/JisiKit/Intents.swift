@@ -225,6 +225,8 @@ public enum MeetingMode {
     }
 
     static func afterChange() async {
+        // 手表的久坐提醒要知道在开会
+        NotificationCenter.default.post(name: .jisiWorkStateDidChange, object: nil)
         await Reminders.shared.reschedule()
         if let session = SharedStore.shared.session, session.isOpen {
             await ClockOutNotice.schedule(for: session)

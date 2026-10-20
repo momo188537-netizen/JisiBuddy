@@ -57,6 +57,19 @@ final class PhoneWatchLink: NSObject {
         }
     }
 
+    /// 调试：让手表 1 分钟后发一条久坐提醒（手表 App 不在前台时走排队，可能晚一点到）。
+    func sendStandTest() {
+        let session = WCSession.default
+        guard WCSession.isSupported(), session.activationState == .activated else { return }
+        if session.isReachable {
+            session.sendMessage(WatchCodec.standTestPayload, replyHandler: nil) { _ in
+                WCSession.default.transferUserInfo(WatchCodec.standTestPayload)
+            }
+        } else {
+            session.transferUserInfo(WatchCodec.standTestPayload)
+        }
+    }
+
     /// 执行手表发来的请求，返回执行后的状态。
     func handle(_ command: WatchCommand, now: Date = Date()) async -> WatchState {
         guard command.isFresh(now: now) else { return store.watchState(now: now) }
@@ -73,6 +86,10 @@ final class PhoneWatchLink: NSObject {
         case .clockOut:
             if live.isWorking { await live.endWork() }
         case .sync:
+            return store.watchState(now: now)
+        case .stood:
+            // 记进「今天的小事」，和饭点提醒里点「休息了」一样
+            await JisiActions.tookBreak()
             return store.watchState(now: now)
         }
         // startWork / endWork 会发 jisiWorkStateDidChange 推一次；没变化的情况（已经在上班等）这里再推一次

@@ -1,4 +1,5 @@
 import JisiKit
+import JisiWatchKit
 import Observation
 import SwiftUI
 import WidgetKit
@@ -43,6 +44,8 @@ final class HomeModel {
             guard reminders != oldValue else { return }
             store.reminders = reminders
             Task { await Reminders.shared.reschedule() }
+            // 久坐提醒在手表上排，开关和间隔推过去
+            PhoneWatchLink.shared.push()
         }
     }
 
@@ -55,7 +58,13 @@ final class HomeModel {
         diary = SharedStore.shared.diary
         light = SceneLight.at(Date(), schedule: SharedStore.shared.schedule)
         isRestDay = !SharedStore.shared.schedule.isWorkday(Date(), calendar: .current)
-        reminders = SharedStore.shared.reminders
+        var r = SharedStore.shared.reminders
+        // 原来的「休息提醒」改成手表久坐提醒，间隔迁到最接近的可选值（45/50/60/90）
+        if !StandPlan.choices.contains(r.breakInterval) {
+            r.breakInterval = StandPlan.normalized(r.breakInterval)
+            SharedStore.shared.reminders = r
+        }
+        reminders = r
         live.reattach()
     }
 

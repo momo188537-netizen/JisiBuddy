@@ -1,4 +1,5 @@
 import Foundation
+import JisiWatchKit
 
 public enum JisiConfig {
     /// 要和 App / Widget 两个 target 的 entitlements 保持一致。
@@ -165,10 +166,10 @@ public struct Preferences: Codable, Hashable, Sendable {
 public struct ReminderSettings: Codable, Hashable, Sendable {
     public var mealsEnabled: Bool
     public var breaksEnabled: Bool
-    /// 工作时段内每隔多久提醒休息一次（分钟）
+    /// 久坐提醒（只在手表上）：上班期间每隔多久提醒站起来（分钟，45/50/60/90）。字段名沿用原来的「休息提醒」。
     public var breakInterval: Int
 
-    public init(mealsEnabled: Bool = false, breaksEnabled: Bool = false, breakInterval: Int = 90) {
+    public init(mealsEnabled: Bool = false, breaksEnabled: Bool = false, breakInterval: Int = StandPlan.defaultInterval) {
         self.mealsEnabled = mealsEnabled
         self.breaksEnabled = breaksEnabled
         self.breakInterval = breakInterval

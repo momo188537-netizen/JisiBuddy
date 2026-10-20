@@ -1,6 +1,8 @@
 import Foundation
 
-/// 饭点 / 休息提醒排哪些。纯函数：排未来几天的单次提醒，开会期间的跳过。
+/// 饭点提醒排哪些。纯函数：排未来几天的单次提醒，开会期间的跳过。
+///
+/// 「休息提醒」现在是手表上的久坐提醒（`StandPlan`，手表本地排），iPhone 不再发，免得锁屏时转发到手表重复。
 ///
 /// 为什么不用每周重复的通知：重复通知没法只跳过某一次（开会时），所以改成每次排未来 7 天的单次提醒，
 /// 每次打开 App、点锁屏按钮、开会 / 散会时都会重排。iOS 最多保留 64 条，这里最多排 60 条（最近的优先）。
@@ -18,7 +20,7 @@ public enum ReminderPlan {
 
     public static func upcoming(settings: ReminderSettings, schedule s: Schedule, now: Date, meetingUntil: Date? = nil,
                                 days: Int = 7, calendar: Calendar = .current) -> [Item] {
-        guard settings.mealsEnabled || settings.breaksEnabled else { return [] }
+        guard settings.mealsEnabled else { return [] }
         var items: [Item] = []
         let today = calendar.startOfDay(for: now)
         for d in 0..<days {
@@ -28,20 +30,6 @@ public enum ReminderPlan {
             if settings.mealsEnabled {
                 if let t = at(s.lunch) { items.append(Item(id: "lunch.\(key)", date: t, category: mealCategory, body: "饭点到啦，鸡丝也饿了。记得去吃饭～")) }
                 if let t = at(s.dinner) { items.append(Item(id: "dinner.\(key)", date: t, category: mealCategory, body: "晚饭时间！吃饱了再忙喵。")) }
-            }
-            // 休息提醒只在工作日的上班时间里发
-            if settings.breaksEnabled, s.isWorkday(day, calendar: calendar) {
-                let step = max(30, settings.breakInterval)
-                var m = s.workStart.minutes + step
-                var i = 0
-                while m < s.workEnd.minutes {
-                    // 饭点前后半小时不打扰
-                    if abs(m - s.lunch.minutes) > 30, let t = at(DayTime(0, m)) {
-                        items.append(Item(id: "break.\(key).\(i)", date: t, category: breakCategory, body: "起来伸个懒腰吧，鸡丝陪你一起。"))
-                    }
-                    m += step
-                    i += 1
-                }
             }
         }
         return items
@@ -101,7 +89,7 @@ public final class Reminders {
         center.removePendingNotificationRequests(withIdentifiers: pending)
 
         let settings = store.reminders
-        guard settings.mealsEnabled || settings.breaksEnabled else { return }
+        guard settings.mealsEnabled else { return }
         guard await requestAuthorizationIfNeeded() else { return }
 
         let calendar = Calendar.current

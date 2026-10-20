@@ -1,3 +1,4 @@
+import JisiWatchKit
 import SwiftUI
 
 @main
@@ -13,5 +14,7 @@ struct JisiWatchApp: App {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { model.requestSync() }
         }
+
+        WKNotificationScene(controller: StandNotificationController.self, category: StandPlan.category)
     }
 }

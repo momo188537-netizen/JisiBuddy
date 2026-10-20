@@ -16,7 +16,7 @@ struct WatchCodecTests {
     }
 
     @Test func commandRoundTrips() throws {
-        for action in [WatchCommand.Action.clockIn, .clockOut, .sync] {
+        for action in [WatchCommand.Action.clockIn, .clockOut, .sync, .stood] {
             let c = WatchCommand(action: action, sentAt: now)
             let payload = WatchCodec.payload(for: c)
             #expect(WatchCodec.command(from: payload) == c)
@@ -171,5 +171,96 @@ struct WatchCountdownTests {
         #expect(WatchArt.fish != nil)
         #expect(WatchArt.closedFace != nil)
         #expect(WatchArt.closedSmallFace != nil)
+    }
+}
+
+struct StandPlanTests {
+    let calendar: Calendar = {
+        var c = Calendar(identifier: .gregorian)
+        c.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+        return c
+    }()
+
+    func date(_ h: Int, _ m: Int = 0) -> Date {
+        calendar.date(from: DateComponents(year: 2026, month: 10, day: 20, hour: h, minute: m))!
+    }
+
+    func working(interval: Int? = 50, meetingUntil: Date? = nil, lunch: Int? = 12 * 60) -> WatchState {
+        WatchState(isWorking: true, startedAt: date(9), expectedClockOut: date(18), updatedAt: date(9),
+                   standInterval: interval, meetingUntil: meetingUntil, lunchMinutes: lunch)
+    }
+
+    @Test func everyIntervalFromClockInUntilClockOut() {
+        let dates = StandPlan.dates(state: working(lunch: nil), lastStood: nil, now: date(9), calendar: calendar)
+        #expect(dates.first == date(9, 50))
+        #expect(dates.dropFirst().first == date(10, 40))
+        #expect(dates.allSatisfy { $0 < date(18) })
+        #expect(zip(dates, dates.dropFirst()).allSatisfy { $1.timeIntervalSince($0) == 50 * 60 })
+    }
+
+    @Test func restartsFromLastStood() {
+        let dates = StandPlan.dates(state: working(lunch: nil), lastStood: date(10, 5), now: date(10, 6), calendar: calendar)
+        #expect(dates.first == date(10, 55))
+    }
+
+    @Test func offWhenDisabledOrNotWorkingOrAfterClockOut() {
+        #expect(StandPlan.dates(state: working(interval: nil), lastStood: nil, now: date(9), calendar: calendar).isEmpty)
+        #expect(StandPlan.dates(state: .initial, lastStood: nil, now: date(9), calendar: calendar).isEmpty)
+        #expect(StandPlan.dates(state: working(), lastStood: nil, now: date(18, 1), calendar: calendar).isEmpty)
+    }
+
+    @Test func skipsLunchAndMeeting() {
+        let lunch = StandPlan.dates(state: working(interval: 45), lastStood: nil, now: date(9), calendar: calendar)
+        #expect(!lunch.contains { $0 >= date(11, 30) && $0 <= date(12, 30) })
+        let meeting = StandPlan.dates(state: working(meetingUntil: date(11), lunch: nil), lastStood: nil, now: date(9, 10), calendar: calendar)
+        #expect(!meeting.contains { $0 < date(11) })
+        #expect(meeting.first == date(11, 30))
+    }
+
+    @Test func boundedAndOnlyFuture() {
+        let s = WatchState(isWorking: true, startedAt: date(0), expectedClockOut: date(23, 59), updatedAt: date(0), standInterval: 45)
+        let dates = StandPlan.dates(state: s, lastStood: nil, now: date(5), calendar: calendar)
+        #expect(dates.count <= StandPlan.maxPending)
+        #expect(dates.allSatisfy { $0 > date(5) })
+    }
+
+    @Test func oldIntervalsMigrateToChoices() {
+        #expect(StandPlan.normalized(90) == 90)
+        #expect(StandPlan.normalized(30) == 45)
+        #expect(StandPlan.normalized(75) == 60 || StandPlan.normalized(75) == 90)
+        #expect(StandPlan.normalized(180) == 90)
+        #expect(StandPlan.choices.contains(StandPlan.defaultInterval))
+    }
+
+    @Test func phoneStateCarriesStandSettings() {
+        let on = WatchState(session: nil, schedule: .default, now: date(9),
+                            reminders: ReminderSettings(breaksEnabled: true, breakInterval: 60), meetingUntil: date(10))
+        #expect(on.standInterval == 60 && on.meetingUntil == date(10) && on.lunchMinutes == 12 * 60)
+        let off = WatchState(session: nil, schedule: .default, now: date(11),
+                             reminders: ReminderSettings(breaksEnabled: false), meetingUntil: date(10))
+        #expect(off.standInterval == nil && off.meetingUntil == nil)
+    }
+
+    /// 老版本手表 / iPhone 发的状态没有久坐字段，照样能解
+    @Test func decodesStateWithoutStandFields() throws {
+        let json = #"{"isWorking":true,"startedAt":1800000000,"expectedClockOut":1800030000,"workEndMinutes":1110,"updatedAt":1800000000}"#
+        let payload: [String: Any] = ["state": Data(json.utf8)]
+        let s = try #require(WatchCodec.state(from: payload))
+        #expect(s.isWorking && s.standInterval == nil)
+    }
+
+    @Test func standTestPayload() {
+        #expect(WatchCodec.isStandTest(WatchCodec.standTestPayload))
+        #expect(!WatchCodec.isStandTest(WatchCodec.payload(for: .initial)))
+    }
+
+    /// iPhone 不再自己发休息提醒（避免和手表重复）
+    @Test func phoneSendsNoBreakReminders() {
+        let settings = ReminderSettings(mealsEnabled: true, breaksEnabled: true, breakInterval: 45)
+        let items = ReminderPlan.upcoming(settings: settings, schedule: .default, now: date(8), calendar: calendar)
+        #expect(!items.isEmpty)
+        #expect(items.allSatisfy { $0.category == ReminderPlan.mealCategory })
+        let onlyBreaks = ReminderSettings(mealsEnabled: false, breaksEnabled: true)
+        #expect(ReminderPlan.upcoming(settings: onlyBreaks, schedule: .default, now: date(8), calendar: calendar).isEmpty)
     }
 }
