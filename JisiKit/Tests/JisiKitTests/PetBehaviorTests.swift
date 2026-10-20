@@ -48,3 +48,40 @@ struct PetBehaviorTests {
         }
     }
 }
+
+struct PetClampTests {
+    let size = CGSize(width: 150, height: 170)
+    // 1512×982 的屏幕：菜单栏 33pt，程序坞在下面 60pt
+    let visible = CGRect(x: 0, y: 60, width: 1512, height: 889)
+
+    @Test func insideStaysPut() {
+        #expect(PetBehavior.clamp(origin: CGPoint(x: 600, y: 300), size: size, into: visible) == CGPoint(x: 600, y: 300))
+    }
+
+    @Test func pulledBackFromEveryEdge() {
+        // 拖出下边、左边、右边、上边
+        #expect(PetBehavior.clamp(origin: CGPoint(x: 600, y: -80), size: size, into: visible) == CGPoint(x: 600, y: 60))
+        #expect(PetBehavior.clamp(origin: CGPoint(x: -70, y: 300), size: size, into: visible) == CGPoint(x: 0, y: 300))
+        #expect(PetBehavior.clamp(origin: CGPoint(x: 1450, y: 300), size: size, into: visible) == CGPoint(x: 1362, y: 300))
+        #expect(PetBehavior.clamp(origin: CGPoint(x: 600, y: 900), size: size, into: visible) == CGPoint(x: 600, y: 779))
+    }
+
+    @Test func headReachesMenuBar() {
+        // 窗口里鸡丝画在下面 130×130、左右各空 10pt，上面 40pt 是跳一下用的透明空间
+        let content = CGRect(x: 10, y: 0, width: 130, height: 130)
+        let top = PetBehavior.clamp(origin: CGPoint(x: 600, y: 2000), size: size, content: content, into: visible)
+        #expect(top.y + content.maxY == visible.maxY)   // 头顶贴着菜单栏下沿
+        #expect(top.y + size.height > visible.maxY)     // 透明那截伸到菜单栏后面
+        let left = PetBehavior.clamp(origin: CGPoint(x: -500, y: 300), size: size, content: content, into: visible)
+        #expect(left.x + content.minX == visible.minX)
+        let right = PetBehavior.clamp(origin: CGPoint(x: 5000, y: 300), size: size, content: content, into: visible)
+        #expect(right.x + content.maxX == visible.maxX)
+        let bottom = PetBehavior.clamp(origin: CGPoint(x: 600, y: -500), size: size, content: content, into: visible)
+        #expect(bottom.y == visible.minY)
+    }
+
+    @Test func secondScreenWithNegativeOrigin() {
+        let left = CGRect(x: -1920, y: 0, width: 1920, height: 1050)
+        #expect(PetBehavior.clamp(origin: CGPoint(x: -2000, y: -10), size: size, into: left) == CGPoint(x: -1920, y: 0))
+    }
+}

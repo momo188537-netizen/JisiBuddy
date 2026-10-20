@@ -76,3 +76,15 @@ public enum PetBehavior {
         return min(hi, max(lo, target))
     }
 }
+
+extension PetBehavior {
+    /// 把桌宠放进屏幕可用区域（菜单栏下面、程序坞外面、不出左右边）。坐标是 AppKit 的（原点左下）。
+    /// - content: 窗口里真正画着鸡丝的那块（窗口坐标）。窗口上面留着跳一下用的透明空间，
+    ///   那块可以伸到菜单栏后面，这样鸡丝的头能贴到菜单栏下沿。默认整个窗口。
+    public static func clamp(origin: CGPoint, size: CGSize, content: CGRect? = nil, into visible: CGRect) -> CGPoint {
+        let c = content ?? CGRect(origin: .zero, size: size)
+        let minX = visible.minX - c.minX, maxX = max(minX, visible.maxX - c.maxX)
+        let minY = visible.minY - c.minY, maxY = max(minY, visible.maxY - c.maxY)
+        return CGPoint(x: min(maxX, max(minX, origin.x)), y: min(maxY, max(minY, origin.y)))
+    }
+}

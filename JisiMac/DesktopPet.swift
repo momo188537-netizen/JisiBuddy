@@ -17,11 +17,16 @@ final class PetController {
 
     /// 窗口大小（鸡丝的头 130pt，上面留出跳一下的空间）
     static let size = NSSize(width: 150, height: 170)
+    /// 窗口里画着鸡丝的那块（底部居中 130×130），夹在屏幕里时按这块算
+    static var catRect: CGRect {
+        CGRect(x: (size.width - PetView.catSide) / 2, y: 0, width: PetView.catSide, height: PetView.catSide)
+    }
 
     let state = PetState()
     private var panel: PetPanel?
     private var loop: Task<Void, Never>?
     private var monitors: [Any] = []
+    private var screenObserver: NSObjectProtocol?
     private let model = MacModel.shared
 
     var isVisible: Bool {
@@ -45,6 +50,7 @@ final class PetController {
         panel.contentView = host
         panel.orderFrontRegardless()
         self.panel = panel
+        keepOnScreen()
         startTracking()
         startLoop()
     }
@@ -53,6 +59,8 @@ final class PetController {
         loop?.cancel()
         loop = nil
         for m in monitors { NSEvent.removeMonitor(m) }
+        if let o = screenObserver { NotificationCenter.default.removeObserver(o) }
+        screenObserver = nil
         monitors = []
         panel?.orderOut(nil)
         panel?.contentView = nil
@@ -82,9 +90,31 @@ final class PetController {
         UserDefaults.standard.set([Double(o.x), Double(o.y)], forKey: Self.originKey)
     }
 
+    /// 拖动：跟着鼠标走，但整只鸡丝始终留在鼠标所在那块屏幕的可用区域里（不进菜单栏、不压程序坞、不出屏幕边）
     func move(by delta: NSPoint) {
         guard let panel else { return }
-        panel.setFrameOrigin(NSPoint(x: panel.frame.origin.x + delta.x, y: panel.frame.origin.y + delta.y))
+        let target = NSPoint(x: panel.frame.origin.x + delta.x, y: panel.frame.origin.y + delta.y)
+        let mouse = NSEvent.mouseLocation
+        let screen = NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) } ?? panel.screen ?? NSScreen.main
+        guard let visible = screen?.visibleFrame else { panel.setFrameOrigin(target); return }
+        panel.setFrameOrigin(PetBehavior.clamp(origin: target, size: panel.frame.size, content: Self.catRect, into: visible))
+    }
+
+    /// 放回屏幕里：启动时、换显示器 / 改分辨率 / 程序坞变了时
+    func keepOnScreen() {
+        guard let panel else { return }
+        let frame = panel.frame
+        let center = NSPoint(x: frame.midX, y: frame.midY)
+        let screen = NSScreen.screens.first { NSMouseInRect(center, $0.frame, false) }
+            ?? NSScreen.screens.max { $0.frame.intersection(frame).width * $0.frame.intersection(frame).height
+                < $1.frame.intersection(frame).width * $1.frame.intersection(frame).height }
+            ?? NSScreen.main
+        guard let visible = screen?.visibleFrame else { return }
+        let fixed = PetBehavior.clamp(origin: frame.origin, size: frame.size, content: Self.catRect, into: visible)
+        if fixed != frame.origin {
+            panel.setFrameOrigin(fixed)
+            saveOrigin()
+        }
     }
 
     // MARK: - 只有头那一圈接鼠标
@@ -111,6 +141,10 @@ final class PetController {
                 let over = c.isOverCat(screenPoint: NSEvent.mouseLocation)
                 if panel.ignoresMouseEvents == over { panel.ignoresMouseEvents = !over }
             }
+        }
+        screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
+                                                                object: nil, queue: .main) { _ in
+            MainActor.assumeIsolated { PetController.shared.keepOnScreen() }
         }
         let mask: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged]
         if let g = NSEvent.addGlobalMonitorForEvents(matching: mask, handler: update) { monitors.append(g) }
@@ -144,8 +178,9 @@ final class PetController {
     func wander() {
         guard let panel, let screen = panel.screen ?? NSScreen.main else { return }
         let visible = screen.visibleFrame
-        let x = PetBehavior.wanderX(from: panel.frame.minX, width: panel.frame.width,
-                                    minX: visible.minX, maxX: visible.maxX, unit: .random(in: 0...1))
+        let inset = Self.catRect.minX
+        let x = PetBehavior.wanderX(from: panel.frame.minX + inset, width: Self.catRect.width,
+                                    minX: visible.minX, maxX: visible.maxX, unit: .random(in: 0...1)) - inset
         state.hop()
         NSAnimationContext.runAnimationGroup { ctx in
             ctx.duration = 1.4
@@ -235,6 +270,10 @@ final class PetPanel: NSPanel {
         isReleasedWhenClosed = false
         acceptsMouseMovedEvents = true
     }
+
+    /// 系统默认不让窗口伸到菜单栏后面；桌宠窗口上面那截是透明的，要伸进去鸡丝的头才贴得到菜单栏下沿。
+    /// 位置由 `PetBehavior.clamp` 管。
+    override func constrainFrameRect(_ frameRect: NSRect, to screen: NSScreen?) -> NSRect { frameRect }
 
     override var canBecomeKey: Bool { false }
     override var canBecomeMain: Bool { false }
