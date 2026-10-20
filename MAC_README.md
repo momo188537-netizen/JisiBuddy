@@ -12,6 +12,20 @@
 - 上班时「我在开会」30 / 60 / 90 分钟，开会中可提前结束
 - 今天的小事一行、和 iPhone 的连接状态、退出
 
+## 桌宠
+
+菜单栏照旧（倒计时、设置都在那），另外桌面上会有一只鸡丝（`JisiMac/DesktopPet.swift`）：
+
+- 透明无边框的小窗，浮在所有窗口上面、每个桌面空间都有、不出现在程序坞、点它不会把别的 App 的焦点抢走
+- 默认在主屏幕底部靠右（程序坞上面），可以拖到别处，位置会记住；只有鸡丝的头那一圈接收鼠标，旁边的透明区域点击直接落到下面的窗口
+- 只用鸡丝的头像（睁眼 / 闭眼照），动作是换 pose + 窗口移动：
+  - 上班：醒着陪你，偶尔眨眼、打哈欠（闭眼伸懒腰），时不时跳一下沿屏幕底部溜达到旁边；40 分钟没理它开始犯困，75 分钟睡着（`PetBehavior`，有测试）
+  - 下班 / 还没上班：睡觉；开会：安静睡觉，不溜达
+- 点一下 = 摸摸；右键：摸摸、喂小鱼干、玩（毛线球 / 纸箱 / 软垫，没得到的灰掉）、上班 / 一起下班、我在开会 / 开完会了、隐藏桌宠
+- 菜单栏小窗里「桌面上显示鸡丝」开关
+- 所有操作都走 `MacModel` 的同一条同步路，iPhone、手表跟着变
+- 省电：画面最多每秒 12 帧，睡着时 6 帧；鼠标移进移出是事件驱动，不轮询。实测整个 App 约占一个 CPU 核的 3%
+
 ## 同步怎么走
 
 | 位置 | 内容 |
@@ -32,10 +46,11 @@ Mac App 不开沙盒、没有任何 entitlement，用 Apple Development 证书�
 
 ## 验证
 
-- `scripts/test-kit.sh`：112 个测试全过（新增 `PeerSyncTests` 10 个：编解码、帧长度、后写者为准、本地执行、整份采纳）；iOS 模拟器 `JisiKit-Package`：113 个全过
+- `scripts/test-kit.sh`：116 个测试全过（新增 `PeerSyncTests` 10 个：编解码、帧长度、后写者为准、本地执行、整份采纳；`PetBehaviorTests` 4 个）；iOS 模拟器 `JisiKit-Package`：113 个全过
 - `JisiMac`、`JisiApp`（模拟器 / 真机）、`JisiWatch` 构建通过
 - Mac App + iPhone 18 Pro 模拟器实测：iPhone 状态同步到 Mac；Mac 离线时排队的「上班」连上后在 iPhone 上开始会话（开始时间 = Mac 上点的时间）；之后一条过时的「上班」被正确忽略；Mac → iPhone「一起下班」执行并回复
-- 真机：已装到 iPhone，Mac App 装在 /Applications 并已打开；真机之间的连接要等你在两边点「允许」本地网络后才能测
+- 真机（iPhone 16 Pro Max ↔ 这台 MacBook Pro，Wi-Fi）：iPhone 状态同步到 Mac；Mac 上的「摸摸」在 iPhone 上执行并回复
+- 桌宠：窗口在屏幕上（150×170，浮在最上层），各个样子用 `--render-pet` 渲染检查过；点击穿透、拖动、右键菜单没法远程实际点击验证
 
 ## 安装 / 重装
 
@@ -46,4 +61,4 @@ ditto "/tmp/jisi-dd/Build/Products/Release/鸡丝.app" "/Applications/鸡丝.app
 
 开机自启：系统设置 > 通用 > 登录项 > 加上「鸡丝」。
 
-调试：Debug 版 `鸡丝.app/Contents/MacOS/鸡丝 --render-menu out.png` 把小窗画成图片（菜单、无边框按钮会显示成占位块）。
+调试：Debug 版 `鸡丝.app/Contents/MacOS/鸡丝 --render-menu out.png` 把小窗画成图片（菜单、无边框按钮会显示成占位块），`--render-pet out.png` 画出桌宠的几种样子。

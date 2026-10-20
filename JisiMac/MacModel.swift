@@ -20,6 +20,7 @@ final class MacModel {
     private(set) var meetingUntil: Date?
     private(set) var diary: Diary
     private(set) var schedule: Schedule
+    private(set) var lastInteraction: Interaction?
     private(set) var reactionID: Date?
     /// 刚点了「一起下班」，问一句今天累不累（可跳过）
     private(set) var askMood = false
@@ -45,6 +46,7 @@ final class MacModel {
         meetingUntil = SharedStore.shared.meetingUntil
         diary = SharedStore.shared.diary
         schedule = SharedStore.shared.schedule
+        lastInteraction = SharedStore.shared.lastInteraction
         outbox = (UserDefaults.standard.data(forKey: Self.outboxKey))
             .flatMap { try? JSONDecoder().decode([PeerCommand].self, from: $0) } ?? []
 
@@ -70,6 +72,12 @@ final class MacModel {
         meetingUntil = store.meetingUntil
         diary = store.diary
         schedule = store.schedule
+        lastInteraction = store.lastInteraction
+    }
+
+    /// 桌宠此刻的样子（见 `PetBehavior`）
+    var petInput: PetBehavior.Input {
+        PetBehavior.Input(snapshot: snapshot, session: session, meetingUntil: meetingUntil, lastInteraction: lastInteraction, now: now)
     }
 
     // MARK: - 操作

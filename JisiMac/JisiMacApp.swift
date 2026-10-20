@@ -15,7 +15,14 @@ struct JisiMacApp: App {
             MainActor.assumeIsolated { MenuSnapshot.write(to: URL(fileURLWithPath: args[i + 1])) }
             exit(0)
         }
+        // `鸡丝 --render-pet out.png`：桌宠的样子（醒着、睡着各一张拼在一起）
+        if let i = args.firstIndex(of: "--render-pet"), i + 1 < args.count {
+            MainActor.assumeIsolated { MenuSnapshot.writePet(to: URL(fileURLWithPath: args[i + 1])) }
+            exit(0)
+        }
         #endif
+        // 等 App 启动完再开桌宠窗口
+        DispatchQueue.main.async { PetController.shared.start() }
     }
 
     var body: some Scene {
@@ -82,7 +89,28 @@ enum MenuBarIcon {
 @MainActor
 enum MenuSnapshot {
     static func write(to url: URL) {
-        let view = MenuView().environment(MacModel.shared).tint(.orange)
+        save(MenuView().environment(MacModel.shared).tint(.orange), to: url)
+    }
+
+    static func writePet(to url: URL) {
+        let poses: [CatPose] = [.working, .stretching, .drowsy, .sleeping, .petted]
+        let view = HStack(spacing: 0) {
+            ForEach(poses, id: \.self) { pose in
+                VStack {
+                    JisiCatView(pose: pose, animated: false)
+                        .frame(width: PetView.catSide, height: PetView.catSide)
+                        .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
+                        .frame(width: PetController.size.width, height: PetController.size.height, alignment: .bottom)
+                    Text(pose.displayName).font(.caption)
+                }
+            }
+        }
+        .padding()
+        .background(Color(white: 0.85))
+        save(view, to: url)
+    }
+
+    static func save(_ view: some View, to url: URL) {
         let renderer = ImageRenderer(content: view)
         renderer.scale = 2
         guard let cg = renderer.cgImage else { return }

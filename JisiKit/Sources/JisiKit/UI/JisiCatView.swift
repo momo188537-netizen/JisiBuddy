@@ -22,14 +22,18 @@ public struct JisiCatView: View {
     public var largeStill: Bool
     /// 锁屏小组件的单色（vibrant）模式：用高对比度灰度头像，五官更清楚。
     public var monochrome: Bool
+    /// 动画最快多久画一帧（秒）。nil = 跟屏幕刷新走；一直开着的桌宠用 1/15 秒省电。
+    public var frameInterval: Double?
 
-    public init(pose: CatPose, toy: Toy? = nil, animated: Bool = true, reactionID: Date? = nil, largeStill: Bool = false, monochrome: Bool = false) {
+    public init(pose: CatPose, toy: Toy? = nil, animated: Bool = true, reactionID: Date? = nil, largeStill: Bool = false,
+                monochrome: Bool = false, frameInterval: Double? = nil) {
         self.pose = pose
         self.toy = toy
         self.animated = animated
         self.reactionID = reactionID
         self.largeStill = largeStill
         self.monochrome = monochrome
+        self.frameInterval = frameInterval
     }
 
     public var body: some View {
@@ -38,7 +42,7 @@ public struct JisiCatView: View {
             let side = min(geo.size.width, geo.size.height)
             Group {
                 if animated {
-                    TimelineView(.animation) { context in
+                    TimelineView(.animation(minimumInterval: frameInterval, paused: false)) { context in
                         frame(look: look, side: side, t: context.date.timeIntervalSinceReferenceDate)
                     }
                 } else {

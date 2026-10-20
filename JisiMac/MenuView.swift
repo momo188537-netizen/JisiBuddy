@@ -4,6 +4,7 @@ import SwiftUI
 /// 点菜单栏头像弹出的小窗：鸡丝、此刻在干嘛、上下班、摸摸喂食、开会。
 struct MenuView: View {
     @Environment(MacModel.self) private var model
+    @AppStorage(PetController.visibleKey) private var petVisible = true
 
     var body: some View {
         VStack(spacing: 12) {
@@ -66,6 +67,11 @@ struct MenuView: View {
 
             Divider()
             today
+            Toggle("桌面上显示鸡丝", isOn: $petVisible)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .font(.caption)
+                .onChange(of: petVisible) { _, v in PetController.shared.setVisible(v) }
             footer
         }
         .padding(16)
