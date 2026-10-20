@@ -21,10 +21,15 @@ public enum JisiLog {
     /// 放在 App Group 容器里，App 和扩展（App Intents 可能在扩展进程里跑）都能写。
     public static let container: ModelContainer? = {
         let schema = Schema([LogEntry.self])
+        #if os(macOS)
+        // Mac 不签 App Group，日志放 App 自己的 Application Support（只记 Mac 上点的，回看以 iPhone 为准）
+        return try? ModelContainer(for: schema, configurations: ModelConfiguration(schema: schema))
+        #else
         let group = ModelConfiguration(schema: schema, groupContainer: .identifier(JisiConfig.appGroupID))
         if let c = try? ModelContainer(for: schema, configurations: group) { return c }
         // App Group 不可用时退回 App 自己的沙盒。
         return try? ModelContainer(for: schema, configurations: ModelConfiguration(schema: schema))
+        #endif
     }()
 
     @MainActor

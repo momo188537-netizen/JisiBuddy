@@ -34,6 +34,8 @@ final class HomeModel {
             guard schedule != oldValue else { return }
             store.schedule = schedule
             refresh()
+            // 作息推给 Mac
+            NotificationCenter.default.post(name: .jisiStoreDidChange, object: nil)
             WidgetCenter.shared.reloadAllTimelines()
             Task { await Reminders.shared.reschedule() }
         }

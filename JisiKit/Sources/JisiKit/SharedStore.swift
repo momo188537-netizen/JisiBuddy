@@ -19,7 +19,12 @@ public final class SharedStore: @unchecked Sendable {
     private let decoder = JSONDecoder()
 
     public init(defaults: UserDefaults? = nil) {
+        #if os(macOS)
+        // Mac 菜单栏 App 没有扩展、不签 App Group，用自己的 UserDefaults（数据以 iPhone 同步来的为准）
+        self.defaults = defaults ?? .standard
+        #else
         self.defaults = defaults ?? UserDefaults(suiteName: JisiConfig.appGroupID) ?? .standard
+        #endif
     }
 
     /// 能否真的写入 App Group 容器（用来在 App 里提示签名状态）。

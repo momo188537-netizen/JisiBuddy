@@ -36,6 +36,7 @@ enum InteractionHandler {
         #if canImport(WidgetKit)
         WidgetCenter.shared.reloadAllTimelines()
         #endif
+        NotificationCenter.default.post(name: .jisiStoreDidChange, object: nil)
     }
 }
 
@@ -110,14 +111,15 @@ public struct ClockOutIntent: JisiInteractiveIntent {
 /// 公开给 App 用（例如通知按钮回调）。
 @MainActor
 public enum JisiActions {
-    public static func pet() async { await InteractionHandler.handle(.pet) }
-    public static func feed() async { await InteractionHandler.handle(.feed) }
-    public static func ateMeal() async { await InteractionHandler.handle(.ateMeal) }
-    public static func tookBreak() async { await InteractionHandler.handle(.tookBreak) }
+    /// `now`：Mac 离线时点的，送到 iPhone 时按当时的时间记
+    public static func pet(at now: Date = Date()) async { await InteractionHandler.handle(.pet, now: now) }
+    public static func feed(at now: Date = Date()) async { await InteractionHandler.handle(.feed, now: now) }
+    public static func ateMeal(at now: Date = Date()) async { await InteractionHandler.handle(.ateMeal, now: now) }
+    public static func tookBreak(at now: Date = Date()) async { await InteractionHandler.handle(.tookBreak, now: now) }
     /// 在小窝里点了毛线球 / 纸箱 / 软垫
-    public static func play(_ item: NestItem) async { await InteractionHandler.handle(item.interaction) }
+    public static func play(_ item: NestItem, at now: Date = Date()) async { await InteractionHandler.handle(item.interaction, now: now) }
     /// 下班时选了心情
-    public static func mood(_ mood: ClockOutMood) async { await InteractionHandler.handle(mood.event) }
+    public static func mood(_ mood: ClockOutMood, at now: Date = Date()) async { await InteractionHandler.handle(mood.event, now: now) }
 }
 
 #if os(iOS)

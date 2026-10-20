@@ -33,6 +33,11 @@ P = {k: i(k) for k in [
     "appEmbedWatch", "embedWatchBuildFile", "embedWatchWidgetBuildFile",
     "targetDepWatch", "containerProxyWatch", "targetDepWatchWidget", "containerProxyWatchWidget",
     "cfgWatchEnt", "cfgWatchWidgetEnt", "cfgWatchWidgetPlist",
+    # Mac 菜单栏 App（独立的 macOS target，不嵌进 iOS App）
+    "macProduct", "macGroupFolder", "macTarget",
+    "macSources", "macFrameworks", "macResources",
+    "macDebug", "macRelease", "macConfigList",
+    "macPkgDep", "macPkgBuild", "cfgAppPlist", "cfgMacPlist",
 ]}
 
 def settings(d):
@@ -76,7 +81,9 @@ app = {
     "CODE_SIGN_STYLE": "Automatic",
     "CURRENT_PROJECT_VERSION": "3",
     "GENERATE_INFOPLIST_FILE": "YES",
+    "INFOPLIST_FILE": "Config/JisiApp-Info.plist",
     "INFOPLIST_KEY_CFBundleDisplayName": "鸡丝",
+    "INFOPLIST_KEY_NSLocalNetworkUsageDescription": "和同一个 Wi-Fi 下的 Mac 菜单栏鸡丝同步上班状态。",
     "INFOPLIST_KEY_NSSupportsLiveActivities": "YES",
     "INFOPLIST_KEY_UIApplicationSceneManifest_Generation": "YES",
     "INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents": "YES",
@@ -143,6 +150,32 @@ watch_widget = {
     "WATCHOS_DEPLOYMENT_TARGET": "10.0",
 }
 
+# Mac 菜单栏 App：不开沙盒、不加任何 entitlement，直接用 Apple Development 证书签，不需要描述文件，
+# 所以没有免费账号「7 天过期」的问题（证书本身一年有效，过期后重新编译安装即可）。
+mac = {
+    "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+    "CODE_SIGN_IDENTITY": "Apple Development",
+    "CODE_SIGN_STYLE": "Manual",
+    "PROVISIONING_PROFILE_SPECIFIER": "",
+    "COMBINE_HIDPI_IMAGES": "YES",
+    "CURRENT_PROJECT_VERSION": "3",
+    "ENABLE_HARDENED_RUNTIME": "NO",
+    "GENERATE_INFOPLIST_FILE": "YES",
+    "INFOPLIST_FILE": "Config/JisiMac-Info.plist",
+    "INFOPLIST_KEY_CFBundleDisplayName": "鸡丝",
+    "INFOPLIST_KEY_LSApplicationCategoryType": "public.app-category.lifestyle",
+    "INFOPLIST_KEY_LSUIElement": "YES",
+    "INFOPLIST_KEY_NSLocalNetworkUsageDescription": "和同一个 Wi-Fi 下的 iPhone 鸡丝同步上班状态。",
+    "LD_RUNPATH_SEARCH_PATHS": ["$(inherited)", "@executable_path/../Frameworks"],
+    "MACOSX_DEPLOYMENT_TARGET": "14.0",
+    "MARKETING_VERSION": "0.1",
+    "PRODUCT_BUNDLE_IDENTIFIER": "com.zixu.jisibuddy.mac",
+    "PRODUCT_NAME": "鸡丝",
+    "SDKROOT": "macosx",
+    "SUPPORTED_PLATFORMS": "macosx",
+    "SWIFT_EMIT_LOC_STRINGS": "YES",
+}
+
 def config(id, name, d):
     return f"""\t\t{id} /* {name} */ = {{
 \t\t\tisa = XCBuildConfiguration;
@@ -193,6 +226,7 @@ out = f"""// !$*UTF8*$!
 \t\t{P['watchWidgetPkgBuild']} /* JisiWatchKit in Frameworks */ = {{isa = PBXBuildFile; productRef = {P['watchWidgetPkgDep']} /* JisiWatchKit */; }};
 \t\t{P['embedWatchBuildFile']} /* JisiWatch.app in Embed Watch Content */ = {{isa = PBXBuildFile; fileRef = {P['watchProduct']} /* JisiWatch.app */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};
 \t\t{P['embedWatchWidgetBuildFile']} /* JisiWatchWidgets.appex in Embed Foundation Extensions */ = {{isa = PBXBuildFile; fileRef = {P['watchWidgetProduct']} /* JisiWatchWidgets.appex */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};
+\t\t{P['macPkgBuild']} /* JisiKit in Frameworks */ = {{isa = PBXBuildFile; productRef = {P['macPkgDep']} /* JisiKit */; }};
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -233,6 +267,9 @@ out = f"""// !$*UTF8*$!
 \t\t{P['cfgWatchEnt']} /* JisiWatch.entitlements */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWatch.entitlements; sourceTree = "<group>"; }};
 \t\t{P['cfgWatchWidgetEnt']} /* JisiWatchWidgets.entitlements */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWatchWidgets.entitlements; sourceTree = "<group>"; }};
 \t\t{P['cfgWatchWidgetPlist']} /* JisiWatchWidgets-Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiWatchWidgets-Info.plist"; sourceTree = "<group>"; }};
+\t\t{P['macProduct']} /* 鸡丝.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "鸡丝.app"; sourceTree = BUILT_PRODUCTS_DIR; }};
+\t\t{P['cfgAppPlist']} /* JisiApp-Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiApp-Info.plist"; sourceTree = "<group>"; }};
+\t\t{P['cfgMacPlist']} /* JisiMac-Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiMac-Info.plist"; sourceTree = "<group>"; }};
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -240,10 +277,11 @@ out = f"""// !$*UTF8*$!
 \t\t{P['widgetGroupFolder']} /* JisiWidgets */ = {{isa = PBXFileSystemSynchronizedRootGroup; path = JisiWidgets; sourceTree = "<group>"; }};
 \t\t{P['watchGroupFolder']} /* JisiWatch */ = {{isa = PBXFileSystemSynchronizedRootGroup; path = JisiWatch; sourceTree = "<group>"; }};
 \t\t{P['watchWidgetGroupFolder']} /* JisiWatchWidgets */ = {{isa = PBXFileSystemSynchronizedRootGroup; path = JisiWatchWidgets; sourceTree = "<group>"; }};
+\t\t{P['macGroupFolder']} /* JisiMac */ = {{isa = PBXFileSystemSynchronizedRootGroup; path = JisiMac; sourceTree = "<group>"; }};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-{phase(P['appFrameworks'], 'PBXFrameworksBuildPhase', [P['appPkgBuild'] + ' /* JisiKit in Frameworks */', P['appWatchPkgBuild'] + ' /* JisiWatchKit in Frameworks */'])}{phase(P['widgetFrameworks'], 'PBXFrameworksBuildPhase', [P['widgetPkgBuild'] + ' /* JisiKit in Frameworks */'])}{phase(P['watchFrameworks'], 'PBXFrameworksBuildPhase', [P['watchPkgBuild'] + ' /* JisiWatchKit in Frameworks */'])}{phase(P['watchWidgetFrameworks'], 'PBXFrameworksBuildPhase', [P['watchWidgetPkgBuild'] + ' /* JisiWatchKit in Frameworks */'])}/* End PBXFrameworksBuildPhase section */
+{phase(P['appFrameworks'], 'PBXFrameworksBuildPhase', [P['appPkgBuild'] + ' /* JisiKit in Frameworks */', P['appWatchPkgBuild'] + ' /* JisiWatchKit in Frameworks */'])}{phase(P['widgetFrameworks'], 'PBXFrameworksBuildPhase', [P['widgetPkgBuild'] + ' /* JisiKit in Frameworks */'])}{phase(P['watchFrameworks'], 'PBXFrameworksBuildPhase', [P['watchPkgBuild'] + ' /* JisiWatchKit in Frameworks */'])}{phase(P['watchWidgetFrameworks'], 'PBXFrameworksBuildPhase', [P['watchWidgetPkgBuild'] + ' /* JisiWatchKit in Frameworks */'])}{phase(P['macFrameworks'], 'PBXFrameworksBuildPhase', [P['macPkgBuild'] + ' /* JisiKit in Frameworks */'])}/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 \t\t{P['mainGroup']} = {{
@@ -253,6 +291,7 @@ out = f"""// !$*UTF8*$!
 \t\t\t\t{P['widgetGroupFolder']} /* JisiWidgets */,
 \t\t\t\t{P['watchGroupFolder']} /* JisiWatch */,
 \t\t\t\t{P['watchWidgetGroupFolder']} /* JisiWatchWidgets */,
+\t\t\t\t{P['macGroupFolder']} /* JisiMac */,
 \t\t\t\t{P['configGroup']} /* Config */,
 \t\t\t\t{P['productsGroup']} /* Products */,
 \t\t\t);
@@ -262,6 +301,8 @@ out = f"""// !$*UTF8*$!
 \t\t\tisa = PBXGroup;
 \t\t\tchildren = (
 \t\t\t\t{P['cfgAppEnt']} /* JisiApp.entitlements */,
+\t\t\t\t{P['cfgAppPlist']} /* JisiApp-Info.plist */,
+\t\t\t\t{P['cfgMacPlist']} /* JisiMac-Info.plist */,
 \t\t\t\t{P['cfgWidgetEnt']} /* JisiWidgets.entitlements */,
 \t\t\t\t{P['cfgWidgetPlist']} /* JisiWidgets-Info.plist */,
 \t\t\t\t{P['cfgWatchEnt']} /* JisiWatch.entitlements */,
@@ -278,6 +319,7 @@ out = f"""// !$*UTF8*$!
 \t\t\t\t{P['widgetProduct']} /* JisiWidgets.appex */,
 \t\t\t\t{P['watchProduct']} /* JisiWatch.app */,
 \t\t\t\t{P['watchWidgetProduct']} /* JisiWatchWidgets.appex */,
+\t\t\t\t{P['macProduct']} /* 鸡丝.app */,
 \t\t\t);
 \t\t\tname = Products;
 \t\t\tsourceTree = "<group>";
@@ -384,6 +426,29 @@ out = f"""// !$*UTF8*$!
 \t\t\tproductReference = {P['watchWidgetProduct']} /* JisiWatchWidgets.appex */;
 \t\t\tproductType = "com.apple.product-type.app-extension";
 \t\t}};
+\t\t{P['macTarget']} /* JisiMac */ = {{
+\t\t\tisa = PBXNativeTarget;
+\t\t\tbuildConfigurationList = {P['macConfigList']};
+\t\t\tbuildPhases = (
+\t\t\t\t{P['macSources']} /* Sources */,
+\t\t\t\t{P['macFrameworks']} /* Frameworks */,
+\t\t\t\t{P['macResources']} /* Resources */,
+\t\t\t);
+\t\t\tbuildRules = (
+\t\t\t);
+\t\t\tdependencies = (
+\t\t\t);
+\t\t\tfileSystemSynchronizedGroups = (
+\t\t\t\t{P['macGroupFolder']} /* JisiMac */,
+\t\t\t);
+\t\t\tname = JisiMac;
+\t\t\tpackageProductDependencies = (
+\t\t\t\t{P['macPkgDep']} /* JisiKit */,
+\t\t\t);
+\t\t\tproductName = JisiMac;
+\t\t\tproductReference = {P['macProduct']} /* 鸡丝.app */;
+\t\t\tproductType = "com.apple.product-type.application";
+\t\t}};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -404,6 +469,9 @@ out = f"""// !$*UTF8*$!
 \t\t\t\t\t\tCreatedOnToolsVersion = 16.0;
 \t\t\t\t\t}};
 \t\t\t\t\t{P['watchWidgetTarget']} = {{
+\t\t\t\t\t\tCreatedOnToolsVersion = 16.0;
+\t\t\t\t\t}};
+\t\t\t\t\t{P['macTarget']} = {{
 \t\t\t\t\t\tCreatedOnToolsVersion = 16.0;
 \t\t\t\t\t}};
 \t\t\t\t}};
@@ -429,15 +497,16 @@ out = f"""// !$*UTF8*$!
 \t\t\t\t{P['widgetTarget']} /* JisiWidgets */,
 \t\t\t\t{P['watchTarget']} /* JisiWatch */,
 \t\t\t\t{P['watchWidgetTarget']} /* JisiWatchWidgets */,
+\t\t\t\t{P['macTarget']} /* JisiMac */,
 \t\t\t);
 \t\t}};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-{phase(P['appResources'], 'PBXResourcesBuildPhase')}{phase(P['widgetResources'], 'PBXResourcesBuildPhase')}{phase(P['watchResources'], 'PBXResourcesBuildPhase')}{phase(P['watchWidgetResources'], 'PBXResourcesBuildPhase')}/* End PBXResourcesBuildPhase section */
+{phase(P['appResources'], 'PBXResourcesBuildPhase')}{phase(P['widgetResources'], 'PBXResourcesBuildPhase')}{phase(P['watchResources'], 'PBXResourcesBuildPhase')}{phase(P['watchWidgetResources'], 'PBXResourcesBuildPhase')}{phase(P['macResources'], 'PBXResourcesBuildPhase')}/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-{phase(P['appSources'], 'PBXSourcesBuildPhase')}{phase(P['widgetSources'], 'PBXSourcesBuildPhase')}{phase(P['watchSources'], 'PBXSourcesBuildPhase')}{phase(P['watchWidgetSources'], 'PBXSourcesBuildPhase')}/* End PBXSourcesBuildPhase section */
+{phase(P['appSources'], 'PBXSourcesBuildPhase')}{phase(P['widgetSources'], 'PBXSourcesBuildPhase')}{phase(P['watchSources'], 'PBXSourcesBuildPhase')}{phase(P['watchWidgetSources'], 'PBXSourcesBuildPhase')}{phase(P['macSources'], 'PBXSourcesBuildPhase')}/* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 \t\t{P['targetDep']} /* PBXTargetDependency */ = {{
@@ -458,10 +527,10 @@ out = f"""// !$*UTF8*$!
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-{config(P['projDebug'], 'Debug', proj_debug)}{config(P['projRelease'], 'Release', proj_release)}{config(P['appDebug'], 'Debug', app)}{config(P['appRelease'], 'Release', app)}{config(P['widgetDebug'], 'Debug', widget)}{config(P['widgetRelease'], 'Release', widget)}{config(P['watchDebug'], 'Debug', watch)}{config(P['watchRelease'], 'Release', watch)}{config(P['watchWidgetDebug'], 'Debug', watch_widget)}{config(P['watchWidgetRelease'], 'Release', watch_widget)}/* End XCBuildConfiguration section */
+{config(P['projDebug'], 'Debug', proj_debug)}{config(P['projRelease'], 'Release', proj_release)}{config(P['appDebug'], 'Debug', app)}{config(P['appRelease'], 'Release', app)}{config(P['widgetDebug'], 'Debug', widget)}{config(P['widgetRelease'], 'Release', widget)}{config(P['watchDebug'], 'Debug', watch)}{config(P['watchRelease'], 'Release', watch)}{config(P['watchWidgetDebug'], 'Debug', watch_widget)}{config(P['watchWidgetRelease'], 'Release', watch_widget)}{config(P['macDebug'], 'Debug', mac)}{config(P['macRelease'], 'Release', mac)}/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-{configlist(P['projConfigList'], P['projDebug'], P['projRelease'])}{configlist(P['appConfigList'], P['appDebug'], P['appRelease'])}{configlist(P['widgetConfigList'], P['widgetDebug'], P['widgetRelease'])}{configlist(P['watchConfigList'], P['watchDebug'], P['watchRelease'])}{configlist(P['watchWidgetConfigList'], P['watchWidgetDebug'], P['watchWidgetRelease'])}/* End XCConfigurationList section */
+{configlist(P['projConfigList'], P['projDebug'], P['projRelease'])}{configlist(P['appConfigList'], P['appDebug'], P['appRelease'])}{configlist(P['widgetConfigList'], P['widgetDebug'], P['widgetRelease'])}{configlist(P['watchConfigList'], P['watchDebug'], P['watchRelease'])}{configlist(P['watchWidgetConfigList'], P['watchWidgetDebug'], P['watchWidgetRelease'])}{configlist(P['macConfigList'], P['macDebug'], P['macRelease'])}/* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
 \t\t{P['pkgRef']} /* XCLocalSwiftPackageReference "JisiKit" */ = {{
@@ -490,6 +559,10 @@ out = f"""// !$*UTF8*$!
 \t\t{P['watchWidgetPkgDep']} /* JisiWatchKit */ = {{
 \t\t\tisa = XCSwiftPackageProductDependency;
 \t\t\tproductName = JisiWatchKit;
+\t\t}};
+\t\t{P['macPkgDep']} /* JisiKit */ = {{
+\t\t\tisa = XCSwiftPackageProductDependency;
+\t\t\tproductName = JisiKit;
 \t\t}};
 /* End XCSwiftPackageProductDependency section */
 \t}};
@@ -532,4 +605,6 @@ scheme = f"""<?xml version="1.0" encoding="UTF-8"?>
 open(os.path.join(proj, "xcshareddata", "xcschemes", "JisiApp.xcscheme"), "w").write(scheme)
 watch_scheme = scheme.replace(P['appTarget'], P['watchTarget']).replace("JisiBuddy.app", "JisiWatch.app").replace('"JisiApp"', '"JisiWatch"')
 open(os.path.join(proj, "xcshareddata", "xcschemes", "JisiWatch.xcscheme"), "w").write(watch_scheme)
+mac_scheme = scheme.replace(P['appTarget'], P['macTarget']).replace("JisiBuddy.app", "鸡丝.app").replace('"JisiApp"', '"JisiMac"')
+open(os.path.join(proj, "xcshareddata", "xcschemes", "JisiMac.xcscheme"), "w").write(mac_scheme)
 print("written", proj)

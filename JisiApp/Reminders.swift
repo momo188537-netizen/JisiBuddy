@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         UNUserNotificationCenter.current().delegate = self
         Task { @MainActor in Reminders.shared.registerCategories() }
         PhoneWatchLink.shared.start()
+        PhoneMacLink.shared.start()
         return true
     }
 

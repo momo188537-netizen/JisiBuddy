@@ -4,6 +4,8 @@ import JisiWatchKit
 extension Notification.Name {
     /// 上班 / 一起下班之后发出（App 进程内），iPhone 端用它把新状态推给手表、刷新首页。
     public static let jisiWorkStateDidChange = Notification.Name("JisiWorkStateDidChange")
+    /// 摸摸、喂食、作息这些变了（App 进程内），iPhone 端用它推给 Mac。
+    public static let jisiStoreDidChange = Notification.Name("JisiStoreDidChange")
 }
 
 extension WatchState {

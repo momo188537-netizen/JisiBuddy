@@ -15,6 +15,7 @@
 		FE1893CCFAD907BD8057125E /* JisiWatchKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B454C2253C37D97B818DAF9 /* JisiWatchKit */; };
 		2E0872DF76E200B9D86E3C2B /* JisiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F4E06BDFE22D32A32441ABBE /* JisiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5779FFC1F53B509528863FD4 /* JisiWatchWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4FCB67B6274E92BC090ED68F /* JisiKit in Frameworks */ = {isa = PBXBuildFile; productRef = C2F03D266AB776607E602AD4 /* JisiKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,9 @@
 		6E14C06D8EEA2E258C47136F /* JisiWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWatch.entitlements; sourceTree = "<group>"; };
 		71BCD5D3F9B05645906DA37F /* JisiWatchWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = JisiWatchWidgets.entitlements; sourceTree = "<group>"; };
 		DFB884500D5C9C781C84544C /* JisiWatchWidgets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiWatchWidgets-Info.plist"; sourceTree = "<group>"; };
+		E262AAAC0B195A2711F4CC74 /* 鸡丝.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "鸡丝.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		178B7CBBE97AE0EC010A4867 /* JisiApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiApp-Info.plist"; sourceTree = "<group>"; };
+		CF68D0CEA843E17E962F50D3 /* JisiMac-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JisiMac-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -95,6 +99,7 @@
 		93D564B80441CCC06F962DEB /* JisiWidgets */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiWidgets; sourceTree = "<group>"; };
 		FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiWatch; sourceTree = "<group>"; };
 		2559BCCAE69226D81C4E1B1E /* JisiWatchWidgets */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiWatchWidgets; sourceTree = "<group>"; };
+		49F75CB90E99993CD111801A /* JisiMac */ = {isa = PBXFileSystemSynchronizedRootGroup; path = JisiMac; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +136,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DB0AE8B2E2C35ACC5F7B5960 = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4FCB67B6274E92BC090ED68F /* JisiKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -141,6 +154,7 @@
 				93D564B80441CCC06F962DEB /* JisiWidgets */,
 				FD8BD1D44B2BD46BAF95B0DE /* JisiWatch */,
 				2559BCCAE69226D81C4E1B1E /* JisiWatchWidgets */,
+				49F75CB90E99993CD111801A /* JisiMac */,
 				7173545D75AC56744F55E81B /* Config */,
 				1BADDC1D73C1A20F347483E1 /* Products */,
 			);
@@ -150,6 +164,8 @@
 			isa = PBXGroup;
 			children = (
 				B38B1EDD93DBC348FE880F6E /* JisiApp.entitlements */,
+				178B7CBBE97AE0EC010A4867 /* JisiApp-Info.plist */,
+				CF68D0CEA843E17E962F50D3 /* JisiMac-Info.plist */,
 				D9947F9169C758DC74A626CB /* JisiWidgets.entitlements */,
 				3E34FCB2D82D0B0ACEF2D21B /* JisiWidgets-Info.plist */,
 				6E14C06D8EEA2E258C47136F /* JisiWatch.entitlements */,
@@ -166,6 +182,7 @@
 				1C7052EC5FC02E5BD365EC48 /* JisiWidgets.appex */,
 				F4E06BDFE22D32A32441ABBE /* JisiWatch.app */,
 				D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */,
+				E262AAAC0B195A2711F4CC74 /* 鸡丝.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -272,6 +289,29 @@
 			productReference = D30427FAF2383672B52BA97E /* JisiWatchWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		8857B01D48E68B78A16501D4 /* JisiMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16CA0425C7D2D2E28B30DCA0;
+			buildPhases = (
+				4C5CBF1061B73ABAEB31C8A1 /* Sources */,
+				DB0AE8B2E2C35ACC5F7B5960 /* Frameworks */,
+				A5E8826EA02118DE913C3706 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				49F75CB90E99993CD111801A /* JisiMac */,
+			);
+			name = JisiMac;
+			packageProductDependencies = (
+				C2F03D266AB776607E602AD4 /* JisiKit */,
+			);
+			productName = JisiMac;
+			productReference = E262AAAC0B195A2711F4CC74 /* 鸡丝.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -292,6 +332,9 @@
 						CreatedOnToolsVersion = 16.0;
 					};
 					640645859680FECE10D3AC8A = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					8857B01D48E68B78A16501D4 = {
 						CreatedOnToolsVersion = 16.0;
 					};
 				};
@@ -317,6 +360,7 @@
 				E8173D1080A28ECDFD3BF6B2 /* JisiWidgets */,
 				361B7D4D928FEE083F87C595 /* JisiWatch */,
 				640645859680FECE10D3AC8A /* JisiWatchWidgets */,
+				8857B01D48E68B78A16501D4 /* JisiMac */,
 			);
 		};
 /* End PBXProject section */
@@ -350,6 +394,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A5E8826EA02118DE913C3706 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -375,6 +426,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4351934EE1E6AF2B902466CF = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C5CBF1061B73ABAEB31C8A1 = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -453,7 +511,9 @@
 				CODE_SIGN_STYLE = "Automatic";
 				CURRENT_PROJECT_VERSION = "3";
 				GENERATE_INFOPLIST_FILE = "YES";
+				INFOPLIST_FILE = "Config/JisiApp-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 Mac 菜单栏鸡丝同步上班状态。";
 				INFOPLIST_KEY_NSSupportsLiveActivities = "YES";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = "YES";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = "YES";
@@ -479,7 +539,9 @@
 				CODE_SIGN_STYLE = "Automatic";
 				CURRENT_PROJECT_VERSION = "3";
 				GENERATE_INFOPLIST_FILE = "YES";
+				INFOPLIST_FILE = "Config/JisiApp-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 Mac 菜单栏鸡丝同步上班状态。";
 				INFOPLIST_KEY_NSSupportsLiveActivities = "YES";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = "YES";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = "YES";
@@ -647,6 +709,66 @@
 			};
 			name = Release;
 		};
+		879786BAEDB1AAB9CF1CEE6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = "Manual";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				COMBINE_HIDPI_IMAGES = "YES";
+				CURRENT_PROJECT_VERSION = "3";
+				ENABLE_HARDENED_RUNTIME = "NO";
+				GENERATE_INFOPLIST_FILE = "YES";
+				INFOPLIST_FILE = "Config/JisiMac-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_LSUIElement = "YES";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 iPhone 鸡丝同步上班状态。";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
+				MARKETING_VERSION = "0.1";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.mac";
+				PRODUCT_NAME = "鸡丝";
+				SDKROOT = "macosx";
+				SUPPORTED_PLATFORMS = "macosx";
+				SWIFT_EMIT_LOC_STRINGS = "YES";
+			};
+			name = Debug;
+		};
+		F32F3356838B010091B25A45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = "Manual";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				COMBINE_HIDPI_IMAGES = "YES";
+				CURRENT_PROJECT_VERSION = "3";
+				ENABLE_HARDENED_RUNTIME = "NO";
+				GENERATE_INFOPLIST_FILE = "YES";
+				INFOPLIST_FILE = "Config/JisiMac-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "鸡丝";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_LSUIElement = "YES";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "和同一个 Wi-Fi 下的 iPhone 鸡丝同步上班状态。";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
+				MARKETING_VERSION = "0.1";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.zixu.jisibuddy.mac";
+				PRODUCT_NAME = "鸡丝";
+				SDKROOT = "macosx";
+				SUPPORTED_PLATFORMS = "macosx";
+				SWIFT_EMIT_LOC_STRINGS = "YES";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -695,6 +817,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		16CA0425C7D2D2E28B30DCA0 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				879786BAEDB1AAB9CF1CEE6C /* Debug */,
+				F32F3356838B010091B25A45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -724,6 +855,10 @@
 		3B454C2253C37D97B818DAF9 /* JisiWatchKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = JisiWatchKit;
+		};
+		C2F03D266AB776607E602AD4 /* JisiKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = JisiKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -17,6 +17,10 @@ struct JisiApp: App {
                 .onReceive(NotificationCenter.default.publisher(for: .jisiWorkStateDidChange)) { _ in
                     model.refresh()
                 }
+                // Mac 上点了摸摸、喂食等
+                .onReceive(NotificationCenter.default.publisher(for: .jisiStoreDidChange)) { _ in
+                    model.refresh()
+                }
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active { model.onForeground() }
